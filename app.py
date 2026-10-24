@@ -1,20 +1,29 @@
 """ProofLens - Streamlit frontend.
 
-This file only handles presentation and integration. Model inference lives in
-parser.py (`parse_proof(image_bytes, text) -> dict`) and graph rendering lives
-in visuals.py (`draw_proof(proof)`).
+Presentation and integration only. Model inference lives in parser.py
+(`parse_proof(text, image_bytes, mime_type, ...) -> dict`) and the proof tree in
+visuals.py (`draw_proof(proof, key=...)`, which renders into the page itself).
+
+History is kept in st.session_state, so it lasts for the browser session only.
 """
 
 import hashlib
 import io
 import logging
+import uuid
+from datetime import datetime
 
 import streamlit as st
 
 try:
     from PIL import Image
-except ImportError:  # Pillow is only used for the image preview/validation
+except ImportError:
     Image = None
+
+try:
+    from pypdf import PdfReader
+except ImportError:
+    PdfReader = None
 
 logger = logging.getLogger("prooflens")
 
@@ -25,27 +34,31 @@ Then n = 2k for some integer k.
 Therefore, n² = 4k² = 2(2k²).
 Since 2k² is an integer, n² is even."""
 
-SOURCES = ["Paste text", "Upload image", "Use camera"]
+SOURCES = ["Paste text", "Upload image", "Use camera", "Upload PDF"]
+KIND_LABEL = {"text": "Text", "image": "Image", "camera": "Camera", "pdf": "PDF"}
+
+MAX_PDF_MB = 15
+MAX_PDF_PAGES = 100
+MIN_TEXT_CHARS = 40       # below this a PDF is treated as scanned / image-only
+MAX_HISTORY = 30
 
 # --------------------------------------------------------------------------
-# Optional integrations. A missing teammate module must not break the page.
+# Teammates' modules. A missing one must not break the page.
 # --------------------------------------------------------------------------
 try:
     from parser import parse_proof
     PARSER_ERROR = None
 except Exception as exc:  # noqa: BLE001
-    parse_proof = None
-    PARSER_ERROR = f"{type(exc).__name__}: {exc}"
-    logger.warning("parser import failed: %s", PARSER_ERROR)
+    parse_proof, PARSER_ERROR = None, f"{type(exc).__name__}: {exc}"
 
 try:
-    from visuals import draw_proof
+    try:
+        from visuals import draw_proof
+    except ImportError:  # the file is currently committed as Visuals.py
+        from Visuals import draw_proof
     VISUALS_ERROR = None
 except Exception as exc:  # noqa: BLE001
-    draw_proof = None
-    VISUALS_ERROR = f"{type(exc).__name__}: {exc}"
-    logger.warning("visuals import failed: %s", VISUALS_ERROR)
-
+    draw_proof, VISUALS_ERROR = None, f"{type(exc).__name__}: {exc}"
 
 # --------------------------------------------------------------------------
 # Page setup and styling
@@ -64,6 +77,7 @@ st.markdown(
     .pl-warn  {background:#fff4d6; color:#8a5a00;}
     .pl-error {background:#fde7e9; color:#a1202c;}
     .pl-neutral {background:#eceff3; color:#4a5565;}
+    section[data-testid="stSidebar"] .stButton button {text-align:left; justify-content:flex-start;}
     </style>
     """,
     unsafe_allow_html=True,
@@ -73,215 +87,428 @@ st.markdown(
 # Session state
 # --------------------------------------------------------------------------
 for key, default in {
-    "result": None,        # dict returned by parse_proof
-    "error": None,         # user-facing error message
-    "analyzed_sig": None,  # signature of the input that produced `result`
-    "analyzed_source": None,
-    "analyzed_text": "",   # submitted text or "" for images
-    "analyzed_image": None,  # submitted image bytes or None
-    "run_id": 0,           # bumped on each analysis / reset to reset widgets
+    "history": [],          # newest first; each entry is a dict (see add_history)
+    "active_id": None,      # id of the history entry being displayed
+    "fresh_id": None,       # id of the entry produced by the latest analysis
+    "error": None,          # user-facing error from the latest analysis
+    "confirm_clear": False,
+    "run_id": 0,            # bumped by "New Problem" to reset input widgets
 }.items():
     st.session_state.setdefault(key, default)
 
 
 # --------------------------------------------------------------------------
-# Helpers
+# Small helpers
 # --------------------------------------------------------------------------
-def signature(text, image_bytes):
-    h = hashlib.sha256()
-    h.update((text or "").encode("utf-8"))
-    h.update(image_bytes or b"")
-    return h.hexdigest()
-
-
-def read_image(file):
-    """Return validated image bytes from an uploaded/captured file, or None."""
-    if file is None:
-        return None
-    data = file.getvalue()
-    if Image is not None:
-        Image.open(io.BytesIO(data)).verify()  # raises on corrupt/non-image data
-    return data
-
-
-def first(d, keys, default=None):
-    """First non-empty value among `keys` in dict `d`."""
-    if not isinstance(d, dict):
-        return default
-    for k in keys:
-        v = d.get(k)
-        if v not in (None, "", [], {}):
-            return v
-    return default
-
-
-def as_text(v):
-    if v is None:
-        return ""
-    if isinstance(v, (list, tuple)):
-        return "\n".join(f"- {as_text(x)}" for x in v)
-    if isinstance(v, dict):
-        return "\n".join(f"**{k}:** {as_text(x)}" for k, x in v.items())
-    return str(v)
-
-
-STATUS_MAP = {
-    "valid": ("Valid", "pl-valid"), "ok": ("Valid", "pl-valid"),
-    "correct": ("Valid", "pl-valid"), "true": ("Valid", "pl-valid"),
-    "supported": ("Valid", "pl-valid"),
-    "unsupported": ("Needs justification", "pl-warn"),
-    "gap": ("Needs justification", "pl-warn"),
-    "warning": ("Needs justification", "pl-warn"),
-    "unclear": ("Needs justification", "pl-warn"),
-    "missing_justification": ("Needs justification", "pl-warn"),
-    "error": ("Likely error", "pl-error"), "invalid": ("Likely error", "pl-error"),
-    "incorrect": ("Likely error", "pl-error"), "false": ("Likely error", "pl-error"),
-    "wrong": ("Likely error", "pl-error"),
-}
-
-
-def step_status(step):
-    """Return (label, css_class) or None if the parser gave no status."""
-    raw = first(step, ["status", "validity", "verdict", "is_valid", "valid"])
-    if raw is None:
-        return None
-    if isinstance(raw, bool):
-        raw = "valid" if raw else "invalid"
-    key = str(raw).strip().lower().replace(" ", "_").replace("-", "_")
-    return STATUS_MAP.get(key, (str(raw), "pl-neutral"))
-
-
 def tag(label, css):
     return f'<span class="pl-tag {css}">{label}</span>'
 
 
-def get_steps(proof):
-    steps = first(proof, ["steps", "proof_steps", "logical_steps"], [])
-    return steps if isinstance(steps, list) else []
+def short(text, limit):
+    text = " ".join(str(text).split())
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def human_size(n):
+    return f"{n / 1_048_576:.1f} MB" if n >= 1_048_576 else f"{max(n // 1024, 1)} KB"
+
+
+def make_title(proof, text, filename):
+    title = proof.get("title") if isinstance(proof, dict) else None
+    if not title:
+        lines = [l.strip() for l in (text or "").splitlines() if len(l.strip()) > 3]
+        title = lines[0] if lines else (filename or "Untitled proof")
+    return short(title, 60)
+
+
+# --------------------------------------------------------------------------
+# Image helpers
+# --------------------------------------------------------------------------
+def read_image(file):
+    """Validated (bytes, mime) for an uploaded/captured image, or (None, None)."""
+    if file is None:
+        return None, None
+    data = file.getvalue()
+    if not data:
+        raise ValueError("empty file")
+    mime = file.type or "image/jpeg"
+    if Image is not None:
+        img = Image.open(io.BytesIO(data))
+        img.verify()
+        mime = Image.MIME.get(img.format, mime)
+    return data, mime
+
+
+# --------------------------------------------------------------------------
+# PDF helpers
+# --------------------------------------------------------------------------
+@st.cache_data(show_spinner=False, max_entries=8)
+def extract_pdf(data: bytes) -> dict:
+    """Extract text per page. Cached by file content, so a new file never reuses old text.
+
+    Returns {"pages": [str, ...], "error": str | None}. Never logs document content.
+    """
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted and not reader.decrypt(""):
+            return {"pages": [], "error": "This PDF is password-protected. Remove the password and upload it again."}
+        n = len(reader.pages)
+        if n == 0:
+            return {"pages": [], "error": "This PDF has no pages."}
+        if n > MAX_PDF_PAGES:
+            return {"pages": [], "error": f"This PDF has {n} pages; the limit is {MAX_PDF_PAGES}. "
+                                          "Upload just the pages that contain the proof."}
+        pages = []
+        for page in reader.pages:
+            try:
+                pages.append((page.extract_text() or "").strip())
+            except Exception:  # noqa: BLE001 - one bad page shouldn't sink the document
+                pages.append("")
+        return {"pages": pages, "error": None}
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("PDF read failed: %s", type(exc).__name__)
+        return {"pages": [], "error": "We couldn't read this PDF. It may be corrupted or in an unsupported format."}
+
+
+@st.cache_data(show_spinner=False, max_entries=8)
+def pdf_page_image(data: bytes, page_no: int):
+    """Largest embedded image on a page as (bytes, mime), or None. Works for scanned PDFs."""
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        if reader.is_encrypted:
+            reader.decrypt("")
+        images = list(reader.pages[page_no - 1].images)
+        if not images:
+            return None
+        raw = max(images, key=lambda i: len(i.data)).data
+        img = Image.open(io.BytesIO(raw))
+        if img.format in ("JPEG", "PNG"):
+            return raw, Image.MIME[img.format]
+        buf = io.BytesIO()
+        img.convert("RGB").save(buf, format="PNG")
+        return buf.getvalue(), "image/png"
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("PDF page image failed: %s", type(exc).__name__)
+        return None
+
+
+# --------------------------------------------------------------------------
+# Input section. Each function returns a submission dict or None.
+# A submission: kind, text, image, mime, filename, meta.
+# --------------------------------------------------------------------------
+def text_input_ui(rid):
+    text = st.text_area("Proof", height=240, placeholder=PLACEHOLDER, key=f"text_{rid}",
+                        help="Plain text, Unicode symbols and LaTeX-style expressions are all fine.")
+    return {"kind": "text", "text": text.strip(), "image": None, "mime": None,
+            "filename": None, "meta": None}
+
+
+def image_input_ui(rid, camera):
+    try:
+        if camera:
+            f = st.camera_input("Take a picture of the handwritten proof", key=f"camera_{rid}")
+        else:
+            f = st.file_uploader("Upload a photo or screenshot of the proof",
+                                 type=["png", "jpg", "jpeg"], key=f"upload_{rid}")
+        data, mime = read_image(f)
+    except Exception:  # noqa: BLE001
+        st.error("That file couldn't be read as an image. Please try a PNG or JPG.")
+        return None
+    if not data:
+        return None
+    st.image(data, caption="Preview", width=420)
+    return {"kind": "camera" if camera else "image", "text": "", "image": data, "mime": mime,
+            "filename": None if camera else f.name, "meta": None}
+
+
+def pdf_input_ui(rid):
+    if PdfReader is None:
+        st.error("PDF support needs the `pypdf` package. Run `pip install pypdf`.")
+        return None
+    f = st.file_uploader("Upload a PDF containing a proof", type=["pdf"], key=f"pdf_{rid}",
+                         help="Remove the file with the ✕ next to its name, or drop a new one to replace it.")
+    if f is None:
+        return None
+    data = f.getvalue()
+    if not data:
+        st.error("That file is empty.")
+        return None
+    if len(data) > MAX_PDF_MB * 1_048_576:
+        st.error(f"That PDF is {human_size(len(data))}; the limit is {MAX_PDF_MB} MB.")
+        return None
+    if b"%PDF" not in data[:1024]:
+        st.error("That file doesn't look like a PDF.")
+        return None
+
+    info = extract_pdf(data)
+    if info["error"]:
+        st.error(info["error"])
+        return None
+
+    pages = info["pages"]
+    n = len(pages)
+    st.caption(f"📄 **{f.name}** · {n} page{'s' if n != 1 else ''} · {human_size(len(data))}")
+    digest = hashlib.sha1(data).hexdigest()[:10]
+    chars = sum(len("".join(p.split())) for p in pages)
+
+    if chars >= MIN_TEXT_CHARS:
+        return pdf_text_ui(rid, f.name, pages, digest)
+    return pdf_scanned_ui(rid, f.name, data, n, digest)
+
+
+def pdf_text_ui(rid, filename, pages, digest):
+    n = len(pages)
+    first_page, last_page = (st.slider("Pages to analyze", 1, n, (1, n), key=f"pdfrange_{rid}_{digest}")
+                             if n > 1 else (1, 1))
+    chosen = "\n\n".join(p for p in pages[first_page - 1:last_page] if p)
+    st.success("Text extracted from the PDF. Review and edit it below. Keep only the proof you want analyzed.")
+    text = st.text_area("Extracted text", value=chosen, height=280,
+                        key=f"pdftext_{rid}_{digest}_{first_page}_{last_page}")
+    meta = f"{n} pages" if n == 1 or (first_page, last_page) == (1, n) else \
+        f"pages {first_page}–{last_page} of {n}"
+    return {"kind": "pdf", "text": text.strip(), "image": None, "mime": None,
+            "filename": filename, "meta": meta}
+
+
+def pdf_scanned_ui(rid, filename, data, n, digest):
+    st.warning(
+        "This PDF has little or no selectable text, so it looks like a **scan**. ProofLens can't "
+        "run OCR on its own text layer, but it can send one page's embedded scan to the AI as an "
+        "image. Pick a page below."
+    )
+    page_no = (st.number_input("Page to analyze", 1, n, 1, key=f"pdfpage_{rid}_{digest}")
+               if n > 1 else 1)
+    found = pdf_page_image(data, int(page_no))
+    if not found:
+        st.error(f"Page {page_no} has no embedded image to analyze. Try another page, or "
+                 "upload a photo or screenshot of the proof instead.")
+        return None
+    img, mime = found
+    st.image(img, caption=f"Page {page_no}", width=420)
+    return {"kind": "pdf", "text": "", "image": img, "mime": mime, "filename": filename,
+            "meta": f"scanned, page {page_no} of {n}"}
+
+
+# --------------------------------------------------------------------------
+# History
+# --------------------------------------------------------------------------
+def add_history(sub, proof):
+    entry = {
+        "id": uuid.uuid4().hex[:10],
+        "title": make_title(proof, sub["text"], sub["filename"]),
+        "kind": sub["kind"],
+        "filename": sub["filename"],
+        "meta": sub["meta"],
+        "time": datetime.now(),
+        "proof": proof,
+        "source_text": sub["text"],
+        "image": sub["image"],   # only for image/camera/scanned-PDF-page input; raw PDFs are never kept
+    }
+    st.session_state.history = [entry] + st.session_state.history[: MAX_HISTORY - 1]
+    return entry
+
+
+def get_entry(entry_id):
+    return next((e for e in st.session_state.history if e["id"] == entry_id), None)
+
+
+def cb_select(entry_id):
+    st.session_state.active_id = entry_id
+    st.session_state.error = None
+
+
+def cb_new():
+    st.session_state.update(active_id=None, error=None, fresh_id=None, confirm_clear=False,
+                            run_id=st.session_state.run_id + 1)
+
+
+def cb_delete(entry_id):
+    st.session_state.history = [e for e in st.session_state.history if e["id"] != entry_id]
+    if st.session_state.active_id == entry_id:
+        st.session_state.active_id = None
+
+
+def cb_clear(confirm):
+    st.session_state.confirm_clear = confirm
+
+
+def cb_clear_all():
+    st.session_state.update(history=[], active_id=None, fresh_id=None, confirm_clear=False)
+
+
+def render_sidebar():
+    with st.sidebar:
+        st.header("ProofLens History")
+        st.button("➕ New Problem", type="primary", use_container_width=True, on_click=cb_new)
+        history = st.session_state.history
+        if not history:
+            st.caption("No problems yet. Analyze a proof and it will show up here.")
+            return
+        st.caption("Kept for this browser session only.")
+        box = st.container(height=420) if len(history) > 6 else st.container()
+        with box:
+            for e in history:
+                active = e["id"] == st.session_state.active_id
+                c1, c2 = st.columns([5, 1])
+                c1.button(short(e["title"], 34), key=f"sel_{e['id']}", help=e["title"],
+                          type="primary" if active else "secondary", use_container_width=True,
+                          on_click=cb_select, args=(e["id"],))
+                c2.button("✕", key=f"del_{e['id']}", help="Delete this entry",
+                          on_click=cb_delete, args=(e["id"],))
+                label = KIND_LABEL[e["kind"]] + (f" · {short(e['filename'], 18)}" if e["filename"] else "")
+                c1.caption(f"{label} · {e['time']:%H:%M}")
+        if st.session_state.confirm_clear:
+            st.warning("Delete all history?")
+            a, b = st.columns(2)
+            a.button("Yes, clear", on_click=cb_clear_all, use_container_width=True)
+            b.button("Cancel", on_click=cb_clear, args=(False,), use_container_width=True)
+        else:
+            st.button("Clear history", on_click=cb_clear, args=(True,), use_container_width=True)
+
+
+# --------------------------------------------------------------------------
+# Results
+# --------------------------------------------------------------------------
+VERDICTS = {
+    "valid": (st.success, "The analysis found no problems with this proof."),
+    "valid_with_gaps": (st.warning, "The analysis found the proof correct but with missing justifications."),
+    "invalid": (st.error, "The analysis found a likely error in this proof."),
+    "unclear": (st.info, "The analysis could not reach a clear verdict."),
+}
+
+
+def step_status(step):
+    if step.get("error"):
+        return "Likely error", "pl-error"
+    if step.get("gap"):
+        return "Needs justification", "pl-warn"
+    return "Looks valid", "pl-valid"
 
 
 def render_step(i, step):
-    if not isinstance(step, dict):  # parser gave plain strings
-        step = {"statement": as_text(step)}
-    number = first(step, ["id", "step", "number", "index", "step_number"], i)
-    statement = first(step, ["statement", "text", "claim", "content", "math"])
-    explanation = first(step, ["explanation", "plain_english", "plain_explanation", "description"])
-    justification = first(step, ["justification", "reason", "rule", "theorem"])
-    deps = first(step, ["depends_on", "dependencies", "dependency", "from", "uses", "parents"])
-    issue = first(step, ["issue", "problem", "gap", "error", "warning", "note"])
-    status = step_status(step)
-
-    known = {"id", "step", "number", "index", "step_number", "statement", "text", "claim",
-             "content", "math", "explanation", "plain_english", "plain_explanation",
-             "description", "justification", "reason", "rule", "theorem", "depends_on",
-             "dependencies", "dependency", "from", "uses", "parents", "status", "validity",
-             "verdict", "is_valid", "valid", "issue", "problem", "gap", "error", "warning", "note"}
-    extras = {k: v for k, v in step.items() if k not in known and v not in (None, "", [], {})}
-
-    head = f"Step {number}"
-    if statement:
-        head += f": {str(statement).splitlines()[0][:90]}"
-    expanded = bool(status and status[1] in ("pl-warn", "pl-error"))
-    with st.expander(head, expanded=expanded or i <= 1):
-        if status:
-            st.markdown(tag(*status), unsafe_allow_html=True)
-        if statement:
-            st.code(str(statement), language="text")
-        if explanation:
-            st.markdown(f"**In plain English:** {as_text(explanation)}")
-        if justification:
-            st.markdown(f"**Justification:** {as_text(justification)}")
-        if deps:
-            d = deps if isinstance(deps, (list, tuple)) else [deps]
-            st.markdown("**Follows from step(s):** " + ", ".join(str(x) for x in d))
-        elif deps is not None and i > 1:
-            pass
-        if issue:
-            box = st.error if status and status[1] == "pl-error" else st.warning
-            box(as_text(issue))
-        for k, v in extras.items():
-            st.markdown(f"**{str(k).replace('_', ' ').capitalize()}:** {as_text(v)}")
+    if not isinstance(step, dict):
+        step = {"statement": str(step)}
+    sid = step.get("id", f"S{i}")
+    label, css = step_status(step)
+    problem = bool(step.get("error") or step.get("gap"))
+    with st.expander(f"Step {sid}: {short(step.get('statement', ''), 80)}", expanded=problem or i == 1):
+        badges = tag(label, css)
+        if step.get("type"):
+            badges += tag(str(step["type"]).capitalize(), "pl-neutral")
+        if step.get("confidence") in ("low", "medium"):
+            badges += tag(f"{step['confidence']} confidence", "pl-neutral")
+        st.markdown(badges, unsafe_allow_html=True)
+        if step.get("statement"):
+            st.code(str(step["statement"]), language="text", wrap_lines=True)
+        if step.get("justification"):
+            st.markdown(f"**Why this step is allowed:** {step['justification']}")
+        if step.get("depends_on"):
+            st.markdown("**Follows from:** " + ", ".join(str(d) for d in step["depends_on"]))
+        if step.get("error"):
+            st.error(f"**Likely error.** {step.get('error_explanation') or 'This step does not appear to follow.'}")
+        elif step.get("gap"):
+            st.warning(f"**Missing justification.** {step.get('gap_explanation') or 'This step skips some reasoning.'}")
 
 
-def render_visual(proof):
+def tree_input(proof):
+    """Map parser fields to the ones visuals.draw_proof reads, without changing either module."""
+    steps = []
+    for s in proof.get("steps") or []:
+        if not isinstance(s, dict):
+            continue
+        kind = s.get("type")
+        steps.append({
+            "id": s.get("id"),
+            "text": s.get("statement", ""),
+            "type": kind if kind in ("assumption", "conclusion") else "implication",
+            "depends_on": s.get("depends_on") or [],
+            "explanation": s.get("justification", ""),
+            "status": "error" if s.get("error") else "gap" if s.get("gap") else "ok",
+            "issue": s.get("error_explanation") or s.get("gap_explanation") or "",
+        })
+    return {"title": proof.get("title"), "steps": steps}
+
+
+def render_tree(entry):
     st.subheader("Visual proof tree")
     if draw_proof is None:
         st.info("The proof tree is unavailable because the visualization module could not be loaded.")
-        logger.warning("visuals unavailable: %s", VISUALS_ERROR)
         return
     with st.expander("How to read this tree"):
         st.markdown(
-            "Each node is a statement in the proof. Arrows point from the statements a step "
-            "relies on to the step that uses them, ending at the conclusion."
+            "Each box is a step. Arrows point from the steps a statement relies on to the statement "
+            "that uses them. Press **Play** to walk through the argument; steps with a missing "
+            "justification or a likely error are highlighted."
         )
     try:
-        fig = draw_proof(proof)
-        if fig is None:
-            return  # draw_proof rendered into the page itself
-        if hasattr(fig, "source") or isinstance(fig, str):
-            st.graphviz_chart(fig, use_container_width=True)  # graphviz object or DOT text
-        elif hasattr(fig, "savefig"):
-            st.pyplot(fig)
-        else:
-            st.write(fig)
+        draw_proof(tree_input(entry["proof"]), key=f"tree_{entry['id']}")
     except Exception as exc:  # noqa: BLE001
-        logger.exception("draw_proof failed")
-        st.warning("The proof tree couldn't be drawn for this proof, but the written analysis above is still available.")
-        if "dot" in str(exc).lower() or "graphviz" in str(exc).lower():
-            st.caption("Graphviz may not be installed on this machine.")
+        logger.warning("draw_proof failed: %s", type(exc).__name__)
+        st.warning("The proof tree couldn't be drawn, but the written analysis above is still available.")
 
 
-def render_results(proof):
-    st.success("Analysis complete.")
+def render_results(entry):
+    proof = entry["proof"]
+    steps = proof.get("steps") if isinstance(proof.get("steps"), list) else []
 
-    stale = st.session_state.analyzed_sig != st.session_state.get("current_sig")
-    if stale:
-        st.info("The input has changed since this analysis. Click **Analyze Proof** to update it.")
+    if entry["id"] == st.session_state.fresh_id:
+        st.success("Analysis complete.")
+    else:
+        st.info(f"📂 **Previous analysis** from {entry['time']:%b %d, %H:%M}, loaded from history. "
+                "No new analysis was run.")
 
-    steps = get_steps(proof)
-    known_top = {"steps", "proof_steps", "logical_steps"}
+    # Verdict
+    verdict = proof.get("verdict")
+    if verdict in VERDICTS:
+        box, default = VERDICTS[verdict]
+        box(proof.get("verdict_explanation") or default)
+        st.caption("This is an AI-generated assessment, not a formal verification.")
 
-    # A. overview
+    # Overview
     st.subheader("Proof overview")
-    objective = first(proof, ["objective", "goal", "summary", "statement", "theorem", "claim"])
-    conclusion = first(proof, ["conclusion", "result"])
-    extracted = first(proof, ["proof_text", "extracted_text", "text", "transcription", "proof", "raw_text"])
-    if extracted is None and st.session_state.analyzed_text:
-        extracted = st.session_state.analyzed_text
-    c1, c2 = st.columns([3, 2])
-    with c1:
-        if extracted:
-            st.markdown("**Proof**")
-            st.code(as_text(extracted), language="text", wrap_lines=True)
-        elif st.session_state.analyzed_image:
-            st.image(st.session_state.analyzed_image, caption="Submitted image")
-    with c2:
-        if objective:
-            st.markdown(f"**Objective**\n\n{as_text(objective)}")
-        if conclusion:
-            st.markdown(f"**Conclusion**\n\n{as_text(conclusion)}")
-    if st.session_state.analyzed_image and extracted:
+    if proof.get("title") or proof.get("technique"):
+        bits = [f"**{proof['title']}**" if proof.get("title") else "",
+                f"Technique: {proof['technique']}" if proof.get("technique") else ""]
+        st.markdown("  \n".join(b for b in bits if b))
+    if proof.get("summary"):
+        st.markdown(proof["summary"])
+    src = []
+    if entry["filename"]:
+        src.append(f"📄 {entry['filename']}")
+    if entry["meta"]:
+        src.append(entry["meta"])
+    if src:
+        st.caption(" · ".join(src))
+    if entry["source_text"]:
+        with st.expander("Submitted proof text", expanded=entry["kind"] == "text"):
+            st.code(entry["source_text"], language="text", wrap_lines=True)
+    if entry["image"]:
         with st.expander("Submitted image"):
-            st.image(st.session_state.analyzed_image)
+            st.image(entry["image"])
 
-    # C (summary part). assumptions + issues, shown before steps for demo flow
-    assumptions = first(proof, ["assumptions", "assumption"])
-    gaps = first(proof, ["gaps", "logical_gaps", "issues", "errors", "warnings"])
-    if assumptions or gaps:
+    # Assumptions and gaps
+    assumptions = [s for s in steps if isinstance(s, dict) and s.get("type") == "assumption"]
+    flagged = [s for s in steps if isinstance(s, dict) and (s.get("error") or s.get("gap"))]
+    if assumptions or flagged:
         st.subheader("Assumptions and logical gaps")
         a, g = st.columns(2)
         with a:
-            if assumptions:
-                st.markdown("**Assumptions**")
-                for item in assumptions if isinstance(assumptions, list) else [assumptions]:
-                    st.markdown(f"- {as_text(item)}")
+            st.markdown("**Assumptions**")
+            for s in assumptions or []:
+                st.markdown(f"- **{s.get('id')}:** {short(s.get('statement', ''), 140)}")
+            if not assumptions:
+                st.caption("None identified.")
         with g:
-            if gaps:
-                st.markdown("**Potential gaps** *(flagged by the analysis, not a formal verification)*")
-                for item in gaps if isinstance(gaps, list) else [gaps]:
-                    st.warning(as_text(item))
+            st.markdown("**Flagged steps**")
+            for s in flagged:
+                if s.get("error"):
+                    st.error(f"**{s.get('id')}, likely error:** {s.get('error_explanation', '')}")
+                else:
+                    st.warning(f"**{s.get('id')}, missing justification:** {s.get('gap_explanation', '')}")
+            if not flagged:
+                st.caption("No gaps or errors flagged.")
 
-    # B. steps
+    # Steps
     st.subheader("Step-by-step explanation")
     if steps:
         for i, step in enumerate(steps, start=1):
@@ -289,119 +516,92 @@ def render_results(proof):
     else:
         st.info("The analysis did not return any individual steps.")
 
-    # Anything else the parser returned that we don't know about
-    handled = known_top | {"objective", "goal", "summary", "statement", "theorem", "claim",
-                           "conclusion", "result", "proof_text", "extracted_text", "text",
-                           "transcription", "proof", "raw_text", "assumptions", "assumption",
-                           "gaps", "logical_gaps", "issues", "errors", "warnings"}
-    extra = {k: v for k, v in proof.items() if k not in handled and v not in (None, "", [], {})}
-    if extra:
-        with st.expander("Additional details"):
-            for k, v in extra.items():
-                st.markdown(f"**{str(k).replace('_', ' ').capitalize()}:** {as_text(v)}")
+    notes = proof.get("warnings")
+    if notes:
+        with st.expander("Analysis notes"):
+            for n in notes:
+                st.markdown(f"- {n}")
 
-    # D. visualization
     if steps:
-        render_visual(proof)
+        render_tree(entry)
 
 
-def run_analysis(text, image_bytes, source):
-    """Call the parser once and store the outcome in session state."""
-    st.session_state.result = None
+# --------------------------------------------------------------------------
+# Analysis
+# --------------------------------------------------------------------------
+def run_analysis(sub):
+    """Call the parser once. Only a successful result creates a history entry."""
     st.session_state.error = None
     try:
         with st.spinner("Analyzing your proof. This can take a few seconds..."):
-            result = parse_proof(image_bytes, text)
-        if not isinstance(result, dict) or not result:
+            proof = parse_proof(text=sub["text"], image_bytes=sub["image"], mime_type=sub["mime"])
+        if not isinstance(proof, dict) or not proof:
             raise ValueError("unexpected parser output")
-        st.session_state.result = result
-        st.session_state.analyzed_sig = signature(text, image_bytes)
-        st.session_state.analyzed_source = source
-        st.session_state.analyzed_text = text or ""
-        st.session_state.analyzed_image = image_bytes
-    except Exception:  # noqa: BLE001
-        logger.exception("parse_proof failed")
-        st.session_state.error = (
-            "We couldn't analyze that proof. Check that the text or image is a readable "
-            "proof and try again. If it keeps failing, the AI service may be unavailable."
-        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("parse_proof failed: %s", type(exc).__name__)
+        msg = str(exc).lower()
+        if "api key" in msg or "api_key" in msg or "credentials" in msg:
+            st.session_state.error = ("The AI service isn't configured. Add your API key "
+                                      "(see the project README or `.env`) and try again.")
+        else:
+            st.session_state.error = ("We couldn't analyze that proof. Check that the text or image "
+                                      "is a readable proof and try again. If it keeps failing, the "
+                                      "AI service may be unavailable.")
+        st.session_state.active_id = None
+        return
+    entry = add_history(sub, proof)
+    st.session_state.active_id = st.session_state.fresh_id = entry["id"]
 
 
 # --------------------------------------------------------------------------
 # Layout
 # --------------------------------------------------------------------------
+render_sidebar()
+
 st.markdown('<p class="pl-title">🔎 ProofLens</p>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="pl-sub">Turn confusing math proofs into step-by-step visual explanations.</p>',
-    unsafe_allow_html=True,
-)
+st.markdown('<p class="pl-sub">Turn confusing math proofs into step-by-step visual explanations.</p>',
+            unsafe_allow_html=True)
 
 if parse_proof is None:
-    st.error(
-        "The proof analysis module (`parser.py`) isn't available yet, so proofs can't be "
-        "analyzed. Add it next to `app.py` and reload."
-    )
+    st.error("The proof analysis module (`parser.py`) couldn't be loaded, so proofs can't be "
+             "analyzed yet. Check that it and its dependencies are installed, then reload.")
     logger.error("parser unavailable: %s", PARSER_ERROR)
 
 rid = st.session_state.run_id
 source = st.radio("Input method", SOURCES, horizontal=True, label_visibility="collapsed",
                   key=f"source_{rid}")
 
-text_input, image_bytes, input_error = "", None, None
 if source == SOURCES[0]:
-    text_input = st.text_area(
-        "Proof", height=240, placeholder=PLACEHOLDER, key=f"text_{rid}",
-        help="Plain text, Unicode symbols and LaTeX-style expressions are all fine.",
-    )
+    submission = text_input_ui(rid)
+elif source == SOURCES[1]:
+    submission = image_input_ui(rid, camera=False)
+elif source == SOURCES[2]:
+    submission = image_input_ui(rid, camera=True)
 else:
-    try:
-        if source == SOURCES[1]:
-            f = st.file_uploader("Upload a photo or screenshot of the proof",
-                                 type=["png", "jpg", "jpeg"], key=f"upload_{rid}")
-        else:
-            f = st.camera_input("Take a picture of the handwritten proof", key=f"camera_{rid}")
-        image_bytes = read_image(f)
-        if image_bytes:
-            st.image(image_bytes, caption="Preview", width=420)
-    except Exception:  # noqa: BLE001
-        logger.exception("image read failed")
-        input_error = "That file couldn't be read as an image. Please try a PNG or JPG."
-        st.error(input_error)
+    submission = pdf_input_ui(rid)
 
-st.session_state.current_sig = signature(text_input.strip(), image_bytes)
-
-has_input = bool(text_input.strip()) if source == SOURCES[0] else bool(image_bytes)
-col_a, col_b, _ = st.columns([1.3, 1.6, 4])
-analyze = col_a.button("Analyze Proof", type="primary", use_container_width=True,
-                       disabled=parse_proof is None)
-start_over = col_b.button("Analyze a different proof", use_container_width=True,
-                          disabled=st.session_state.result is None and st.session_state.error is None)
-
-if start_over:
-    st.session_state.update(result=None, error=None, analyzed_sig=None,
-                            analyzed_text="", analyzed_image=None,
-                            run_id=st.session_state.run_id + 1)
-    st.rerun()
+has_input = bool(submission and (submission["text"] or submission["image"]))
+analyze = st.button("Analyze Proof", type="primary", disabled=parse_proof is None)
 
 if analyze:
-    if input_error:
-        pass
-    elif not has_input:
-        st.session_state.result, st.session_state.error = None, None
-        st.warning("Please paste a proof or provide an image first.")
+    if has_input:
+        run_analysis(submission)
     else:
-        run_analysis(text_input.strip() or "", image_bytes, source)
+        st.session_state.error = None
+        st.warning("Please provide a proof first: paste text, or upload an image or PDF.")
 
 st.divider()
 
+active = get_entry(st.session_state.active_id)
 if st.session_state.error:
     st.error(st.session_state.error)
-elif st.session_state.result is not None:
-    render_results(st.session_state.result)
+elif active:
+    render_results(active)
 elif not analyze:
     st.markdown("#### How it works")
     st.markdown(
-        "1. Paste a proof, upload an image, or snap a photo of handwritten work.\n"
+        "1. Paste a proof, or upload a photo, camera shot or PDF.\n"
         "2. Click **Analyze Proof**.\n"
-        "3. Read each step in plain English, spot unsupported leaps, and explore the proof tree."
+        "3. Read each step in plain English, spot unsupported leaps, and explore the proof tree.\n\n"
+        "Earlier problems appear in the sidebar so you can reopen them."
     )
