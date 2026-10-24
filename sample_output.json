@@ -1,0 +1,199 @@
+{
+  "title": "All horses are the same color",
+  "technique": "induction",
+  "summary": "A classic false proof that uses induction to claim all horses share a color. The error lies in the assumption that the two subsets of horses overlap, which fails when moving from n=1 to n=2.",
+  "steps": [
+    {
+      "id": "S1",
+      "statement": "n = 1: one horse is the same color as itself.",
+      "type": "case",
+      "justification": "Base case for induction.",
+      "depends_on": [],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "h1"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "Base case: A single horse is always one color.",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S2",
+      "statement": "Assume any set of n horses is all one color.",
+      "type": "assumption",
+      "justification": "Inductive hypothesis.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "h1"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "Assume it works for n horses.",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S3",
+      "statement": "Consider a set of n+1 horses: {H1, ..., Hn, Hn+1}.",
+      "type": "assumption",
+      "justification": "Setting up the inductive step.",
+      "depends_on": [
+        "S2"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "h1",
+          "h2",
+          "h3"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "Now look at n+1 horses.",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S4",
+      "statement": "The first n horses {H1, ..., Hn} are one color.",
+      "type": "inference",
+      "justification": "By the inductive hypothesis applied to the first n horses.",
+      "depends_on": [
+        "S2",
+        "S3"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "h1",
+          "h2"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "The first group is monochromatic.",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S5",
+      "statement": "The last n horses {H2, ..., Hn+1} are one color.",
+      "type": "inference",
+      "justification": "By the inductive hypothesis applied to the last n horses.",
+      "depends_on": [
+        "S2",
+        "S3"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "h2",
+          "h3"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "The second group is also monochromatic.",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S6",
+      "statement": "The two groups overlap, so all n+1 horses are the same color.",
+      "type": "conclusion",
+      "justification": "Transitivity of color equality via the intersection of the two sets.",
+      "depends_on": [
+        "S4",
+        "S5"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": true,
+      "error_explanation": "The overlap argument fails for n=1 (moving to n+1=2). If n=1, the first group is {H1} and the second is {H2}. There is no common horse to link their colors.",
+      "confidence": "high",
+      "animation": {
+        "action": "break",
+        "targets": [
+          "h1",
+          "h2",
+          "h3"
+        ],
+        "emphasis": "shake",
+        "duration": "long",
+        "caption": "Wait! For n=1, the groups {H1} and {H2} don't overlap!",
+        "duration_ms": 1500
+      }
+    }
+  ],
+  "verdict": "invalid",
+  "verdict_explanation": "The inductive step fails at the transition from n=1 to n=2 because the two subsets of horses do not share a common element to bridge the color property.",
+  "visual": {
+    "template": "sets",
+    "params": {
+      "items": [
+        {
+          "id": "h1",
+          "label": "H1"
+        },
+        {
+          "id": "h2",
+          "label": "H2"
+        },
+        {
+          "id": "h3",
+          "label": "H3"
+        }
+      ],
+      "groups": [
+        {
+          "id": "g1",
+          "label": "First n",
+          "members": [
+            "h1",
+            "h2"
+          ]
+        },
+        {
+          "id": "g2",
+          "label": "Last n",
+          "members": [
+            "h2",
+            "h3"
+          ]
+        }
+      ]
+    }
+  },
+  "attempts": 1,
+  "warnings": []
+}

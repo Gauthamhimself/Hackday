@@ -1,0 +1,164 @@
+{
+  "title": "Existence of a root for x^3 + x - 1",
+  "technique": "other",
+  "summary": "Using the Intermediate Value Theorem, we show that because a continuous function changes sign between x=0 and x=1, it must cross zero somewhere in that interval.",
+  "steps": [
+    {
+      "id": "S1",
+      "statement": "f(x) = x^3 + x - 1",
+      "type": "definition",
+      "justification": "Defining the function to be analyzed.",
+      "depends_on": [],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "f_plot"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "Define the function f(x) = x^3 + x - 1",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S2",
+      "statement": "f is continuous",
+      "type": "assumption",
+      "justification": "Polynomials are continuous everywhere on the real line.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "f_plot"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "Polynomials are continuous",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S3",
+      "statement": "f(0) = -1 < 0",
+      "type": "inference",
+      "justification": "Direct substitution: 0^3 + 0 - 1 = -1.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "p0"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "At x = 0, f(x) is negative",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S4",
+      "statement": "f(1) = 1 > 0",
+      "type": "inference",
+      "justification": "Direct substitution: 1^3 + 1 - 1 = 1.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "p1"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "At x = 1, f(x) is positive",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S5",
+      "statement": "There exists c in (0,1) such that f(c) = 0",
+      "type": "conclusion",
+      "justification": "The Intermediate Value Theorem guarantees a root when a continuous function changes sign.",
+      "depends_on": [
+        "S2",
+        "S3",
+        "S4"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "connect",
+        "targets": [
+          "p0",
+          "p1",
+          "root"
+        ],
+        "emphasis": "glow",
+        "duration": "long",
+        "caption": "By IVT, the curve must cross zero",
+        "duration_ms": 1500
+      }
+    }
+  ],
+  "verdict": "valid",
+  "verdict_explanation": "The proof correctly identifies the function, establishes continuity, verifies the sign change at the endpoints, and applies the Intermediate Value Theorem.",
+  "visual": {
+    "template": "function_plot",
+    "params": {
+      "x_min": -0.5,
+      "x_max": 1.5,
+      "functions": [
+        {
+          "id": "f_plot",
+          "expr": "x**3 + x - 1",
+          "label": "f(x) = x^3 + x - 1"
+        }
+      ],
+      "points": [
+        {
+          "id": "p0",
+          "x": 0,
+          "label": "f(0) = -1"
+        },
+        {
+          "id": "p1",
+          "x": 1,
+          "label": "f(1) = 1"
+        },
+        {
+          "id": "root",
+          "x": 0.682,
+          "label": "c"
+        }
+      ]
+    }
+  },
+  "attempts": 1,
+  "warnings": []
+}

@@ -1,0 +1,183 @@
+{
+  "title": "Irrationality of √2",
+  "technique": "contradiction",
+  "summary": "The proof assumes √2 is rational (a/b in lowest terms) and uses algebra to show that both a and b must be even, which contradicts the 'lowest terms' assumption.",
+  "steps": [
+    {
+      "id": "S1",
+      "statement": "\\sqrt{2} = a/b \\text{ in lowest terms}",
+      "type": "assumption",
+      "justification": "Assumption for contradiction.",
+      "depends_on": [],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "a_val",
+          "b_val"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "Suppose √2 is a rational fraction in lowest terms",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S2",
+      "statement": "a^2 = 2b^2",
+      "type": "inference",
+      "justification": "Squaring both sides of the assumption.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": true,
+      "gap_explanation": "Show the squaring: (a/b)^2 = 2 => a^2/b^2 = 2 => a^2 = 2b^2.",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "transform",
+        "targets": [
+          "a_val",
+          "b_val"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "Square both sides",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S3",
+      "statement": "a is even, a = 2k",
+      "type": "inference",
+      "justification": "If a^2 is a multiple of 2, then a must be a multiple of 2 (since 2 is prime).",
+      "depends_on": [
+        "S2"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "a_val"
+        ],
+        "emphasis": "pulse",
+        "duration": "medium",
+        "caption": "Since a^2 = 2b^2, a must be even",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S4",
+      "statement": "4k^2 = 2b^2 \\implies b^2 = 2k^2",
+      "type": "inference",
+      "justification": "Substitute a = 2k into a^2 = 2b^2 and divide by 2.",
+      "depends_on": [
+        "S2",
+        "S3"
+      ],
+      "gap": true,
+      "gap_explanation": "Show substitution: (2k)^2 = 2b^2 => 4k^2 = 2b^2 => 2k^2 = b^2.",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "move",
+        "targets": [
+          "a_val",
+          "b_val"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "Substitute a = 2k and simplify",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S5",
+      "statement": "b is even",
+      "type": "inference",
+      "justification": "If b^2 is a multiple of 2, then b must be a multiple of 2.",
+      "depends_on": [
+        "S4"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "b_val"
+        ],
+        "emphasis": "pulse",
+        "duration": "medium",
+        "caption": "This implies b is also even",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S6",
+      "statement": "Contradiction: a, b both even",
+      "type": "conclusion",
+      "justification": "If a and b are both even, the fraction a/b was not in lowest terms.",
+      "depends_on": [
+        "S1",
+        "S5"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "break",
+        "targets": [
+          "g1"
+        ],
+        "emphasis": "shake",
+        "duration": "long",
+        "caption": "But we assumed a/b was in lowest terms!",
+        "duration_ms": 1500
+      }
+    }
+  ],
+  "verdict": "valid_with_gaps",
+  "verdict_explanation": "The logic is sound, but the proof skips the explicit algebraic steps for squaring and substitution.",
+  "visual": {
+    "template": "sets",
+    "params": {
+      "items": [
+        {
+          "id": "a_val",
+          "label": "a (even)"
+        },
+        {
+          "id": "b_val",
+          "label": "b (even)"
+        }
+      ],
+      "groups": [
+        {
+          "id": "g1",
+          "label": "Common Factor: 2",
+          "members": [
+            "a_val",
+            "b_val"
+          ]
+        }
+      ]
+    }
+  },
+  "attempts": 2,
+  "warnings": []
+}

@@ -1,0 +1,188 @@
+{
+  "title": "Number of odd-degree vertices is even",
+  "technique": "direct",
+  "summary": "Using the Handshaking Lemma, we know the sum of all degrees is twice the number of edges (and thus even). Since even-degree vertices sum to an even number, the remaining sum from odd-degree vertices must also be even, which only happens if there is an even number of them.",
+  "steps": [
+    {
+      "id": "S1",
+      "statement": "\\sum_{v \\in V} \\text{deg}(v) = 2|E|",
+      "type": "definition",
+      "justification": "Handshaking Lemma: every edge contributes exactly 2 to the total sum of degrees.",
+      "depends_on": [],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "e1",
+          "e2",
+          "v1",
+          "v2",
+          "v3",
+          "v4"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "The sum of all degrees is twice the number of edges",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S2",
+      "statement": "\\sum_{v \\in V} \\text{deg}(v) \\text{ is even}",
+      "type": "inference",
+      "justification": "Any integer multiplied by 2 is even.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "e1",
+          "e2"
+        ],
+        "emphasis": "glow",
+        "duration": "short",
+        "caption": "Since 2|E| is always even...",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S3",
+      "statement": "\\sum_{v \\in V_{even}} \\text{deg}(v) \\text{ is even}",
+      "type": "inference",
+      "justification": "A sum of even numbers is always even.",
+      "depends_on": [
+        "S2"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "v1",
+          "v2"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "Even-degree vertices contribute an even sum",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S4",
+      "statement": "\\sum_{v \\in V_{odd}} \\text{deg}(v) \\text{ is even}",
+      "type": "inference",
+      "justification": "Even (Total) - Even (Even-degree sum) = Even (Odd-degree sum).",
+      "depends_on": [
+        "S2",
+        "S3"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "connect",
+        "targets": [
+          "v3",
+          "v4"
+        ],
+        "emphasis": "pulse",
+        "duration": "medium",
+        "caption": "The sum of odd-degree vertices must be even",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S5",
+      "statement": "|V_{odd}| \\text{ is even}",
+      "type": "conclusion",
+      "justification": "An odd number of odd integers sums to an odd number; an even number of odd integers sums to an even number.",
+      "depends_on": [
+        "S4"
+      ],
+      "gap": true,
+      "gap_explanation": "Explicitly state: if $k$ is the number of odd-degree vertices, then $\\sum_{i=1}^k (2n_i + 1) = 2M + k$, which is even only if $k$ is even.",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "transform",
+        "targets": [
+          "v3",
+          "v4"
+        ],
+        "emphasis": "glow",
+        "duration": "long",
+        "caption": "Therefore, there must be an even number of them!",
+        "duration_ms": 1500
+      }
+    }
+  ],
+  "verdict": "valid_with_gaps",
+  "verdict_explanation": "The logic is sound, but S5 skips the parity argument explaining why a sum of odd numbers is even only if there is an even number of terms.",
+  "visual": {
+    "template": "graph",
+    "params": {
+      "nodes": [
+        {
+          "id": "v1",
+          "label": "2"
+        },
+        {
+          "id": "v2",
+          "label": "2"
+        },
+        {
+          "id": "v3",
+          "label": "3"
+        },
+        {
+          "id": "v4",
+          "label": "1"
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "v1",
+          "to": "v2",
+          "label": ""
+        },
+        {
+          "id": "e2",
+          "from": "v2",
+          "to": "v3",
+          "label": ""
+        },
+        {
+          "id": "e3",
+          "from": "v3",
+          "to": "v4",
+          "label": ""
+        },
+        {
+          "id": "e4",
+          "from": "v4",
+          "to": "v1",
+          "label": ""
+        }
+      ]
+    }
+  },
+  "attempts": 1,
+  "warnings": []
+}
