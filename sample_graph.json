@@ -1,32 +1,36 @@
 {
   "title": "Number of odd-degree vertices is even",
   "technique": "direct",
-  "summary": "Using the Handshaking Lemma, we know the sum of all degrees is twice the number of edges (and thus even). Since even-degree vertices sum to an even number, the remaining sum from odd-degree vertices must also be even, which only happens if there is an even number of them.",
+  "summary": "Using the Handshaking Lemma, we show the sum of all degrees is twice the number of edges. Since even-degree vertices sum to an even number, the remaining sum (from odd-degree vertices) must also be even, forcing an even number of such vertices.",
   "steps": [
     {
       "id": "S1",
       "statement": "\\sum_{v \\in V} \\text{deg}(v) = 2|E|",
-      "type": "definition",
-      "justification": "Handshaking Lemma: every edge contributes exactly 2 to the total sum of degrees.",
+      "type": "inference",
+      "justification": "Handshaking Lemma: every edge has two endpoints, contributing 2 to the total degree sum.",
       "depends_on": [],
       "gap": false,
       "gap_explanation": "",
       "error": false,
       "error_explanation": "",
       "confidence": "high",
+      "display": {
+        "text": "Σ deg(v) = 2|E|",
+        "tex": "\\sum_{v \\in V} \\text{deg}(v) = 2|E|"
+      },
       "animation": {
         "action": "appear",
         "targets": [
-          "e1",
-          "e2",
           "v1",
           "v2",
           "v3",
-          "v4"
+          "v4",
+          "v5",
+          "v6"
         ],
         "emphasis": "none",
         "duration": "medium",
-        "caption": "The sum of all degrees is twice the number of edges",
+        "caption": "The sum of all degrees is always twice the number of edges",
         "duration_ms": 800
       }
     },
@@ -43,23 +47,31 @@
       "error": false,
       "error_explanation": "",
       "confidence": "high",
+      "display": {
+        "text": "Sum is even",
+        "tex": "\\text{Sum is even}"
+      },
       "animation": {
         "action": "highlight",
         "targets": [
-          "e1",
-          "e2"
+          "v1",
+          "v2",
+          "v3",
+          "v4",
+          "v5",
+          "v6"
         ],
-        "emphasis": "glow",
+        "emphasis": "pulse",
         "duration": "short",
-        "caption": "Since 2|E| is always even...",
+        "caption": "Therefore, the total sum must be even",
         "duration_ms": 400
       }
     },
     {
       "id": "S3",
-      "statement": "\\sum_{v \\in V_{even}} \\text{deg}(v) \\text{ is even}",
+      "statement": "\\sum_{v \\in V_{even}} \\text{deg}(v) + \\sum_{v \\in V_{odd}} \\text{deg}(v) = \\text{even}",
       "type": "inference",
-      "justification": "A sum of even numbers is always even.",
+      "justification": "Partitioning the set of vertices into those with even degree and those with odd degree.",
       "depends_on": [
         "S2"
       ],
@@ -68,25 +80,28 @@
       "error": false,
       "error_explanation": "",
       "confidence": "high",
+      "display": {
+        "text": "EvenSum + OddSum = Even",
+        "tex": "\\sum_{v \\in V_{even}} \\text{deg}(v) + \\sum_{v \\in V_{odd}} \\text{deg}(v) = \\text{even}"
+      },
       "animation": {
-        "action": "highlight",
+        "action": "move",
         "targets": [
-          "v1",
-          "v2"
+          "even_group",
+          "odd_group"
         ],
         "emphasis": "none",
-        "duration": "short",
-        "caption": "Even-degree vertices contribute an even sum",
-        "duration_ms": 400
+        "duration": "medium",
+        "caption": "Split the sum into even-degree and odd-degree vertices",
+        "duration_ms": 800
       }
     },
     {
       "id": "S4",
-      "statement": "\\sum_{v \\in V_{odd}} \\text{deg}(v) \\text{ is even}",
+      "statement": "\\sum_{v \\in V_{even}} \\text{deg}(v) \\text{ is even}",
       "type": "inference",
-      "justification": "Even (Total) - Even (Even-degree sum) = Even (Odd-degree sum).",
+      "justification": "A sum of even numbers is always even.",
       "depends_on": [
-        "S2",
         "S3"
       ],
       "gap": false,
@@ -94,95 +109,966 @@
       "error": false,
       "error_explanation": "",
       "confidence": "high",
+      "display": {
+        "text": "EvenSum is even",
+        "tex": "\\sum_{v \\in V_{even}} \\text{deg}(v) \\equiv 0 \\pmod 2"
+      },
       "animation": {
-        "action": "connect",
+        "action": "highlight",
         "targets": [
-          "v3",
-          "v4"
+          "even_group"
         ],
-        "emphasis": "pulse",
-        "duration": "medium",
-        "caption": "The sum of odd-degree vertices must be even",
-        "duration_ms": 800
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "The sum of even degrees is itself even",
+        "duration_ms": 400
       }
     },
     {
       "id": "S5",
-      "statement": "|V_{odd}| \\text{ is even}",
-      "type": "conclusion",
-      "justification": "An odd number of odd integers sums to an odd number; an even number of odd integers sums to an even number.",
+      "statement": "\\sum_{v \\in V_{odd}} \\text{deg}(v) \\text{ is even}",
+      "type": "inference",
+      "justification": "If (Even + X) is even, then X must be even.",
       "depends_on": [
+        "S3",
         "S4"
       ],
-      "gap": true,
-      "gap_explanation": "Explicitly state: if $k$ is the number of odd-degree vertices, then $\\sum_{i=1}^k (2n_i + 1) = 2M + k$, which is even only if $k$ is even.",
+      "gap": false,
+      "gap_explanation": "",
       "error": false,
       "error_explanation": "",
       "confidence": "high",
+      "display": {
+        "text": "OddSum is even",
+        "tex": "\\sum_{v \\in V_{odd}} \\text{deg}(v) \\equiv 0 \\pmod 2"
+      },
       "animation": {
-        "action": "transform",
+        "action": "highlight",
         "targets": [
-          "v3",
-          "v4"
+          "odd_group"
+        ],
+        "emphasis": "glow",
+        "duration": "medium",
+        "caption": "So the sum of odd degrees must also be even",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S6",
+      "statement": "|V_{odd}| \\text{ is even}",
+      "type": "conclusion",
+      "justification": "An odd number added to itself an odd number of times is odd; an odd number added to itself an even number of times is even. Thus, to get an even sum from odd numbers, you need an even number of them.",
+      "depends_on": [
+        "S5"
+      ],
+      "gap": true,
+      "gap_explanation": "Explain that if you sum $k$ odd numbers, the sum is even if and only if $k$ is even.",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "display": {
+        "text": "|V_odd| is even",
+        "tex": "|V_{odd}| \\equiv 0 \\pmod 2"
+      },
+      "animation": {
+        "action": "zoom",
+        "targets": [
+          "odd_group"
         ],
         "emphasis": "glow",
         "duration": "long",
-        "caption": "Therefore, there must be an even number of them!",
+        "caption": "To get an even sum, you must have an even number of odd terms",
         "duration_ms": 1500
       }
     }
   ],
   "verdict": "valid_with_gaps",
-  "verdict_explanation": "The logic is sound, but S5 skips the parity argument explaining why a sum of odd numbers is even only if there is an even number of terms.",
+  "verdict_explanation": "The logic is sound, but S6 skips the final parity argument connecting the sum of odd numbers to the count of those numbers.",
   "visual": {
-    "template": "graph",
+    "template": "sets",
     "params": {
-      "nodes": [
+      "items": [
         {
           "id": "v1",
-          "label": "2"
+          "label": "deg 2"
         },
         {
           "id": "v2",
-          "label": "2"
+          "label": "deg 4"
         },
         {
           "id": "v3",
-          "label": "3"
+          "label": "deg 3"
         },
         {
           "id": "v4",
-          "label": "1"
+          "label": "deg 1"
+        },
+        {
+          "id": "v5",
+          "label": "deg 5"
+        },
+        {
+          "id": "v6",
+          "label": "deg 3"
         }
       ],
-      "edges": [
+      "groups": [
         {
-          "id": "e1",
-          "from": "v1",
-          "to": "v2",
-          "label": ""
+          "id": "even_group",
+          "label": "Even Degrees",
+          "members": [
+            "v1",
+            "v2"
+          ]
         },
         {
-          "id": "e2",
-          "from": "v2",
-          "to": "v3",
-          "label": ""
-        },
-        {
-          "id": "e3",
-          "from": "v3",
-          "to": "v4",
-          "label": ""
-        },
-        {
-          "id": "e4",
-          "from": "v4",
-          "to": "v1",
-          "label": ""
+          "id": "odd_group",
+          "label": "Odd Degrees",
+          "members": [
+            "v3",
+            "v4",
+            "v5",
+            "v6"
+          ]
         }
       ]
     }
   },
-  "attempts": 1,
-  "warnings": []
+  "attempts": 2,
+  "warnings": [],
+  "manim": {
+    "engine": "manimgl",
+    "frame": {
+      "width": 14.222,
+      "height": 8.0
+    },
+    "template": "sets",
+    "mobjects": [
+      {
+        "id": "title",
+        "class": "Text",
+        "role": "title",
+        "text": "Number of odd-degree vertices is even",
+        "font_size": 36,
+        "position": [
+          0,
+          3.45,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "even_group",
+        "class": "Circle",
+        "role": "group",
+        "position": [
+          -4.15,
+          0.3,
+          0.0
+        ],
+        "radius": 1.55,
+        "color": "BLUE_C",
+        "fill_opacity": 0.15
+      },
+      {
+        "id": "even_group_label",
+        "class": "Text",
+        "role": "label",
+        "text": "Even Degrees",
+        "font_size": 24,
+        "position": [
+          -4.15,
+          2.15,
+          0.0
+        ],
+        "color": "BLUE_C"
+      },
+      {
+        "id": "odd_group",
+        "class": "Circle",
+        "role": "group",
+        "position": [
+          -2.25,
+          0.3,
+          0.0
+        ],
+        "radius": 1.55,
+        "color": "GREEN_C",
+        "fill_opacity": 0.15
+      },
+      {
+        "id": "odd_group_label",
+        "class": "Text",
+        "role": "label",
+        "text": "Odd Degrees",
+        "font_size": 24,
+        "position": [
+          -2.25,
+          2.15,
+          0.0
+        ],
+        "color": "GREEN_C"
+      },
+      {
+        "id": "v1",
+        "class": "Dot",
+        "role": "item",
+        "position": [
+          -4.4,
+          0.3,
+          0.0
+        ],
+        "radius": 0.11,
+        "color": "WHITE"
+      },
+      {
+        "id": "v1_label",
+        "class": "Text",
+        "role": "label",
+        "text": "deg 2",
+        "font_size": 24,
+        "next_to": "v1",
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "v2",
+        "class": "Dot",
+        "role": "item",
+        "position": [
+          -4.4,
+          0.8,
+          0.0
+        ],
+        "radius": 0.11,
+        "color": "WHITE"
+      },
+      {
+        "id": "v2_label",
+        "class": "Text",
+        "role": "label",
+        "text": "deg 4",
+        "font_size": 24,
+        "next_to": "v2",
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "v3",
+        "class": "Dot",
+        "role": "item",
+        "position": [
+          -2.5,
+          0.3,
+          0.0
+        ],
+        "radius": 0.11,
+        "color": "WHITE"
+      },
+      {
+        "id": "v3_label",
+        "class": "Text",
+        "role": "label",
+        "text": "deg 3",
+        "font_size": 24,
+        "next_to": "v3",
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "v4",
+        "class": "Dot",
+        "role": "item",
+        "position": [
+          -2.5,
+          0.8,
+          0.0
+        ],
+        "radius": 0.11,
+        "color": "WHITE"
+      },
+      {
+        "id": "v4_label",
+        "class": "Text",
+        "role": "label",
+        "text": "deg 1",
+        "font_size": 24,
+        "next_to": "v4",
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "v5",
+        "class": "Dot",
+        "role": "item",
+        "position": [
+          -2.5,
+          -0.2,
+          0.0
+        ],
+        "radius": 0.11,
+        "color": "WHITE"
+      },
+      {
+        "id": "v5_label",
+        "class": "Text",
+        "role": "label",
+        "text": "deg 5",
+        "font_size": 24,
+        "next_to": "v5",
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "v6",
+        "class": "Dot",
+        "role": "item",
+        "position": [
+          -2.5,
+          1.3,
+          0.0
+        ],
+        "radius": 0.11,
+        "color": "WHITE"
+      },
+      {
+        "id": "v6_label",
+        "class": "Text",
+        "role": "label",
+        "text": "deg 3",
+        "font_size": 24,
+        "next_to": "v6",
+        "direction": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "eq_S1",
+        "class": "Text",
+        "role": "equation",
+        "text": "Σ deg(v) = 2|E|",
+        "tex": "\\sum_{v \\in V} \\text{deg}(v) = 2|E|",
+        "font_size": 40,
+        "position": [
+          3.7,
+          1.2,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "cap_S1",
+        "class": "Text",
+        "role": "caption",
+        "text": "The sum of all degrees is always twice the number of edges",
+        "font_size": 28,
+        "position": [
+          0.0,
+          -3.45,
+          0.0
+        ],
+        "color": "GREY_A"
+      },
+      {
+        "id": "eq_S2",
+        "class": "Text",
+        "role": "equation",
+        "text": "Sum is even",
+        "tex": "\\text{Sum is even}",
+        "font_size": 40,
+        "position": [
+          3.7,
+          1.2,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "cap_S2",
+        "class": "Text",
+        "role": "caption",
+        "text": "Therefore, the total sum must be even",
+        "font_size": 28,
+        "position": [
+          0.0,
+          -3.45,
+          0.0
+        ],
+        "color": "GREY_A"
+      },
+      {
+        "id": "eq_S3",
+        "class": "Text",
+        "role": "equation",
+        "text": "EvenSum + OddSum = Even",
+        "tex": "\\sum_{v \\in V_{even}} \\text{deg}(v) + \\sum_{v \\in V_{odd}} \\text{deg}(v) = \\text{even}",
+        "font_size": 40,
+        "position": [
+          3.7,
+          1.2,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "cap_S3",
+        "class": "Text",
+        "role": "caption",
+        "text": "Split the sum into even-degree and odd-degree vertices",
+        "font_size": 28,
+        "position": [
+          0.0,
+          -3.45,
+          0.0
+        ],
+        "color": "GREY_A"
+      },
+      {
+        "id": "eq_S4",
+        "class": "Text",
+        "role": "equation",
+        "text": "EvenSum is even",
+        "tex": "\\sum_{v \\in V_{even}} \\text{deg}(v) \\equiv 0 \\pmod 2",
+        "font_size": 40,
+        "position": [
+          3.7,
+          1.2,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "cap_S4",
+        "class": "Text",
+        "role": "caption",
+        "text": "The sum of even degrees is itself even",
+        "font_size": 28,
+        "position": [
+          0.0,
+          -3.45,
+          0.0
+        ],
+        "color": "GREY_A"
+      },
+      {
+        "id": "eq_S5",
+        "class": "Text",
+        "role": "equation",
+        "text": "OddSum is even",
+        "tex": "\\sum_{v \\in V_{odd}} \\text{deg}(v) \\equiv 0 \\pmod 2",
+        "font_size": 40,
+        "position": [
+          3.7,
+          1.2,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "cap_S5",
+        "class": "Text",
+        "role": "caption",
+        "text": "So the sum of odd degrees must also be even",
+        "font_size": 28,
+        "position": [
+          0.0,
+          -3.45,
+          0.0
+        ],
+        "color": "GREY_A"
+      },
+      {
+        "id": "eq_S6",
+        "class": "Text",
+        "role": "equation",
+        "text": "|V_odd| is even",
+        "tex": "|V_{odd}| \\equiv 0 \\pmod 2",
+        "font_size": 40,
+        "position": [
+          3.7,
+          1.2,
+          0.0
+        ],
+        "color": "WHITE"
+      },
+      {
+        "id": "cap_S6",
+        "class": "Text",
+        "role": "caption",
+        "text": "To get an even sum, you must have an even number of odd terms",
+        "font_size": 28,
+        "position": [
+          0.0,
+          -3.45,
+          0.0
+        ],
+        "color": "GREY_A"
+      }
+    ],
+    "timeline": [
+      {
+        "step": "S1",
+        "caption": "The sum of all degrees is always twice the number of edges",
+        "plays": [
+          {
+            "lag_ratio": 0.08,
+            "run_time": 1.2,
+            "animations": [
+              {
+                "class": "Write",
+                "target": "title",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "ShowCreation",
+                "target": "even_group",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "even_group_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "ShowCreation",
+                "target": "odd_group",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "odd_group_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "v1",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "v1_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "v2",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "v2_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "v3",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "v3_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "v4",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "v4_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "v5",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "v5_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "v6",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "Write",
+                "target": "v6_label",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0,
+            "run_time": 0.8,
+            "animations": [
+              {
+                "class": "Write",
+                "target": "eq_S1",
+                "rate_func": "linear",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "cap_S1",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              }
+            ]
+          }
+        ],
+        "camera": null,
+        "wait": 0.5
+      },
+      {
+        "step": "S2",
+        "caption": "Therefore, the total sum must be even",
+        "plays": [
+          {
+            "lag_ratio": 0,
+            "run_time": 0.4,
+            "animations": [
+              {
+                "class": "FadeTransform",
+                "source": "eq_S1",
+                "target": "eq_S2",
+                "rate_func": "smooth",
+                "run_time": 0.4
+              },
+              {
+                "class": "FadeOut",
+                "target": "cap_S1",
+                "rate_func": "smooth",
+                "run_time": 0.4
+              },
+              {
+                "class": "FadeIn",
+                "target": "cap_S2",
+                "rate_func": "smooth",
+                "run_time": 0.4
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0.12,
+            "run_time": 0.4,
+            "animations": [
+              {
+                "class": "Indicate",
+                "target": "v1",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              },
+              {
+                "class": "Indicate",
+                "target": "v2",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              },
+              {
+                "class": "Indicate",
+                "target": "v3",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              },
+              {
+                "class": "Indicate",
+                "target": "v4",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              },
+              {
+                "class": "Indicate",
+                "target": "v5",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              },
+              {
+                "class": "Indicate",
+                "target": "v6",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              }
+            ]
+          }
+        ],
+        "camera": null,
+        "wait": 0.5
+      },
+      {
+        "step": "S3",
+        "caption": "Split the sum into even-degree and odd-degree vertices",
+        "plays": [
+          {
+            "lag_ratio": 0,
+            "run_time": 0.8,
+            "animations": [
+              {
+                "class": "FadeTransform",
+                "source": "eq_S2",
+                "target": "eq_S3",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeOut",
+                "target": "cap_S2",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "cap_S3",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0.12,
+            "run_time": 0.8,
+            "animations": [
+              {
+                "class": "ApplyWave",
+                "target": "even_group",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "ApplyWave",
+                "target": "odd_group",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              }
+            ]
+          }
+        ],
+        "camera": null,
+        "wait": 0.5
+      },
+      {
+        "step": "S4",
+        "caption": "The sum of even degrees is itself even",
+        "plays": [
+          {
+            "lag_ratio": 0,
+            "run_time": 0.4,
+            "animations": [
+              {
+                "class": "FadeTransform",
+                "source": "eq_S3",
+                "target": "eq_S4",
+                "rate_func": "smooth",
+                "run_time": 0.4
+              },
+              {
+                "class": "FadeOut",
+                "target": "cap_S3",
+                "rate_func": "smooth",
+                "run_time": 0.4
+              },
+              {
+                "class": "FadeIn",
+                "target": "cap_S4",
+                "rate_func": "smooth",
+                "run_time": 0.4
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0,
+            "run_time": 0.4,
+            "animations": [
+              {
+                "class": "Indicate",
+                "target": "even_group",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.4
+              }
+            ]
+          }
+        ],
+        "camera": null,
+        "wait": 0.5
+      },
+      {
+        "step": "S5",
+        "caption": "So the sum of odd degrees must also be even",
+        "plays": [
+          {
+            "lag_ratio": 0,
+            "run_time": 0.8,
+            "animations": [
+              {
+                "class": "FadeTransform",
+                "source": "eq_S4",
+                "target": "eq_S5",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeOut",
+                "target": "cap_S4",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              },
+              {
+                "class": "FadeIn",
+                "target": "cap_S5",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0,
+            "run_time": 0.8,
+            "animations": [
+              {
+                "class": "Indicate",
+                "target": "odd_group",
+                "color": "YELLOW_C",
+                "rate_func": "there_and_back",
+                "run_time": 0.8
+              },
+              {
+                "class": "FlashAround",
+                "target": "odd_group",
+                "color": "YELLOW_C",
+                "rate_func": "smooth",
+                "run_time": 0.8
+              }
+            ]
+          }
+        ],
+        "camera": null,
+        "wait": 0.5
+      },
+      {
+        "step": "S6",
+        "caption": "To get an even sum, you must have an even number of odd terms",
+        "plays": [
+          {
+            "lag_ratio": 0,
+            "run_time": 1.5,
+            "animations": [
+              {
+                "class": "FadeTransform",
+                "source": "eq_S5",
+                "target": "eq_S6",
+                "rate_func": "smooth",
+                "run_time": 1.5
+              },
+              {
+                "class": "FadeOut",
+                "target": "cap_S5",
+                "rate_func": "smooth",
+                "run_time": 1.5
+              },
+              {
+                "class": "FadeIn",
+                "target": "cap_S6",
+                "rate_func": "smooth",
+                "run_time": 1.5
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0,
+            "run_time": 1.5,
+            "animations": [
+              {
+                "class": "FocusOn",
+                "target": "odd_group",
+                "rate_func": "smooth",
+                "run_time": 1.5
+              },
+              {
+                "class": "FlashAround",
+                "target": "odd_group",
+                "color": "YELLOW_C",
+                "rate_func": "smooth",
+                "run_time": 1.5
+              }
+            ]
+          },
+          {
+            "lag_ratio": 0,
+            "run_time": 1.0,
+            "animations": [
+              {
+                "class": "FlashAround",
+                "target": "eq_S6",
+                "color": "GREEN_C",
+                "rate_func": "smooth",
+                "run_time": 1.0
+              }
+            ]
+          }
+        ],
+        "camera": {
+          "move_to": [
+            -2.25,
+            0.3,
+            0.0
+          ],
+          "height": 4.8,
+          "run_time": 1.5
+        },
+        "wait": 1.2
+      }
+    ],
+    "total_seconds": 14.5
+  }
 }

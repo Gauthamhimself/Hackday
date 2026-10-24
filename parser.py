@@ -16,12 +16,14 @@ import mimetypes
 import re
 import sys
 import textwrap
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 
+from manim_scene import build_manim_scene
 from prompts import SYSTEM_PROMPT, retry_prompt
 
 load_dotenv(Path(__file__).with_name(".env"))
@@ -235,6 +237,11 @@ def find_problems(proof) -> list[str]:
             problems.append(f"{sid}: gap is true but gap_explanation is empty.")
         if s.get("error") and not s.get("error_explanation"):
             problems.append(f"{sid}: error is true but error_explanation is empty.")
+        disp = s.get("display")
+        if not isinstance(disp, dict) or not disp.get("text") or not disp.get("tex"):
+            problems.append(f'{sid}: "display" needs both "text" (Unicode) and "tex" (LaTeX).')
+        elif any(mark in disp["text"] for mark in ("\\", "$", "_{", "^{")):
+            problems.append(f'{sid}: display.text must be plain Unicode with no LaTeX; put LaTeX in display.tex.')
 
         anim = s.get("animation")
         if not isinstance(anim, dict):
@@ -345,7 +352,20 @@ def parse_proof(
     )
     # A chat keeps the proof (and image) in context, so a retry only sends the problem list.
     chat = client.chats.create(model=model, config=config)
-    response = chat.send_message(contents)
+
+    def send(message):
+        # Google sometimes answers 500/503 for a moment, or 429 when the per-minute quota
+        # runs out; wait and try again instead of failing the demo.
+        for attempt in range(3):
+            try:
+                return chat.send_message(message)
+            except (errors.ServerError, errors.ClientError) as e:
+                rate_limited = isinstance(e, errors.ClientError) and e.code == 429
+                if attempt == 2 or not (rate_limited or isinstance(e, errors.ServerError)):
+                    raise
+                time.sleep((10, 20)[attempt] if rate_limited else (2, 4)[attempt])
+
+    response = send(contents)
 
     best, best_problems, raw = None, None, ""
     for attempt in range(1, max_retries + 2):
@@ -360,12 +380,14 @@ def parse_proof(
             best["attempts"] = attempt
         if not problems or attempt > max_retries:
             break
-        response = chat.send_message(retry_prompt(problems))
+        response = send(retry_prompt(problems))
 
     if best is None:
         raise ParseError("Couldn't read Gemma's answer as JSON", raw)
     best["warnings"] = best_problems
-    return normalize_visual(best)
+    proof = normalize_visual(best)
+    proof["manim"] = build_manim_scene(proof)
+    return proof
 
 
 if __name__ == "__main__":

@@ -60,6 +60,10 @@ PART 2. OUTPUT SCHEMA
       "error": false,
       "error_explanation": "",
       "confidence": "high | medium | low",
+      "display": {
+        "text": "the short on-screen math for this step in plain Unicode, e.g. 'a² = 2b²'",
+        "tex": "the same math in LaTeX, e.g. 'a^2 = 2b^2'"
+      },
       "animation": {
         "action": "appear | highlight | move | connect | break | transform | zoom",
         "targets": ["ids of visual elements"],
@@ -91,6 +95,12 @@ Field rules:
 - A step can't have both gap and error true. When neither is true, leave both explanations "".
 - confidence = "low" if the handwriting is unclear or you are unsure of your judgment. Never
   fake certainty: a wrong "high" is worse than an honest "low".
+- display is the equation shown on screen during this step, in the style of a 3Blue1Brown
+  video: one short line of math (at most ~30 characters), not a sentence. Consecutive
+  steps should read like an equation being rewritten, so keep notation consistent between
+  them (e.g. "a = 2m" -> "a + b = 2m + 2n" -> "a + b = 2(m + n)"). For a step with no
+  math, use a 1-4 word label ("Base case", "Contradiction!"). "tex" must be valid LaTeX
+  math with no surrounding $ signs; "text" uses Unicode symbols (², √, ≤, ∈, ⇒) and no LaTeX.
 
 ====================================================================
 PART 3. VISUAL TEMPLATES: pick exactly one
@@ -202,17 +212,20 @@ Output:
   {"id": "S1", "statement": "a and b are even", "type": "assumption",
    "justification": "Given in the claim.", "depends_on": [], "gap": false, "gap_explanation": "",
    "error": false, "error_explanation": "", "confidence": "high",
+   "display": {"text": "a, b even", "tex": "a,\\ b \\text{ even}"},
    "animation": {"action": "appear", "targets": ["a", "b"], "emphasis": "none", "duration": "short",
                  "caption": "Start with two even numbers"}},
   {"id": "S2", "statement": "a = 2m, b = 2n for integers m, n", "type": "definition",
    "justification": "Definition of even.", "depends_on": ["S1"], "gap": false, "gap_explanation": "",
    "error": false, "error_explanation": "", "confidence": "high",
+   "display": {"text": "a = 2m,  b = 2n", "tex": "a = 2m,\\ b = 2n"},
    "animation": {"action": "transform", "targets": ["a", "b"], "emphasis": "pulse", "duration": "medium",
                  "caption": "Each one is two copies of an integer"}},
   {"id": "S3", "statement": "a + b = 2m + 2n is even", "type": "conclusion",
    "justification": "2m + 2n = 2(m + n) and m + n is an integer.", "depends_on": ["S2"],
    "gap": true, "gap_explanation": "Show the factoring: 2m + 2n = 2(m + n), and m + n is an integer.",
    "error": false, "error_explanation": "", "confidence": "high",
+   "display": {"text": "a + b = 2(m + n)", "tex": "a + b = 2(m + n)"},
    "animation": {"action": "connect", "targets": ["a", "b", "sum"], "emphasis": "glow", "duration": "long",
                  "caption": "Pull out the 2: the sum is even"}}],
  "verdict": "valid_with_gaps",
@@ -225,7 +238,8 @@ Output:
 PART 7. FINAL CHECKLIST: verify all of these before you answer
 ====================================================================
 [ ] The reply is one JSON object and nothing else.
-[ ] Every step has all fields, including a complete animation with at least one target.
+[ ] Every step has all fields, including display (text + tex) and a complete animation
+    with at least one target.
 [ ] Every animation target and every member/from/to/vertex/center refers to an id that exists.
 [ ] Every gap/error step has a specific explanation; the verdict obeys Part 5.
 [ ] The visual template fits the proof, and its params contain everything Part 3 requires
