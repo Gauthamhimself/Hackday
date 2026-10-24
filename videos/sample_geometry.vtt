@@ -1,0 +1,37 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:03.688
+Let's walk through this proof: Sum of
+
+00:00:03.688 --> 00:00:06.677
+angles in a triangle is 180°.
+
+00:00:06.677 --> 00:00:08.670
+Start with triangle ABC.
+
+00:00:09.270 --> 00:00:13.044
+Draw a line through A parallel to BC.
+
+00:00:13.044 --> 00:00:17.290
+Parallel Postulate allows construction of a unique parallel line.
+
+00:00:17.890 --> 00:00:20.452
+Alternate interior angles are equal.
+
+00:00:20.452 --> 00:00:26.600
+Alternate interior angles formed by a transversal crossing parallel lines are equal.
+
+00:00:27.200 --> 00:00:30.201
+These three angles form a straight line.
+
+00:00:30.201 --> 00:00:34.060
+Angles on a straight line sum to 180 degrees.
+
+00:00:34.660 --> 00:00:39.168
+Therefore, the sum of triangle angles is 180°.
+
+00:00:39.168 --> 00:00:43.676
+So, in summary: The proof is logically sound
+
+00:00:43.676 --> 00:00:47.620
+and uses standard geometric constructions and properties.

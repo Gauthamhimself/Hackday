@@ -82,7 +82,8 @@
         "duration": "medium",
         "caption": "In a set of n+1, the last n horses are the same color.",
         "duration_ms": 800
-      }
+      },
+      "error_explanation": null
     },
     {
       "id": "S4",
@@ -109,7 +110,8 @@
         "duration": "medium",
         "caption": "The first n horses are also the same color.",
         "duration_ms": 800
-      }
+      },
+      "error_explanation": null
     },
     {
       "id": "S5",
@@ -324,7 +326,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -351,7 +353,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -378,7 +380,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -405,7 +407,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -432,7 +434,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"

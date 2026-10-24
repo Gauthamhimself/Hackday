@@ -1,0 +1,46 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:03.455
+Let's walk through this proof: Existence of
+
+00:00:03.455 --> 00:00:06.710
+root for x³ + x - 1.
+
+00:00:06.710 --> 00:00:08.570
+Define the function f(x).
+
+00:00:08.570 --> 00:00:11.360
+Defining the function to be analyzed.
+
+00:00:11.960 --> 00:00:15.385
+The function is a smooth, continuous curve.
+
+00:00:15.385 --> 00:00:19.300
+Polynomials are continuous everywhere on the real line.
+
+00:00:19.900 --> 00:00:24.328
+At x = 0, the function is negative.
+
+00:00:24.328 --> 00:00:29.310
+Direct substitution: 0³ + 0 - 1 = -1.
+
+00:00:29.910 --> 00:00:33.839
+At x = 1, the function is positive.
+
+00:00:33.839 --> 00:00:38.260
+Direct substitution: 1³ + 1 - 1 = 1.
+
+00:00:38.860 --> 00:00:42.242
+By IVT, the curve must cross zero.
+
+00:00:42.242 --> 00:00:45.625
+The Intermediate Value Theorem guarantees a root
+
+00:00:45.625 --> 00:00:48.524
+when a continuous function changes sign.
+
+00:00:48.524 --> 00:00:54.322
+So, in summary: The proof correctly identifies the function, establishes continuity, checks
+
+00:00:54.322 --> 00:01:00.120
+the endpoints for a sign change, and applies the Intermediate Value Theorem.

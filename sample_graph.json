@@ -5,7 +5,7 @@
   "steps": [
     {
       "id": "S1",
-      "statement": "\\sum_{v \\in V} \\text{deg}(v) = 2|E|",
+      "statement": "∑[v ∈ V] deg(v) = 2|E|",
       "type": "inference",
       "justification": "Handshaking Lemma: every edge has two endpoints, contributing 2 to the total degree sum.",
       "depends_on": [],
@@ -36,7 +36,7 @@
     },
     {
       "id": "S2",
-      "statement": "\\sum_{v \\in V} \\text{deg}(v) \\text{ is even}",
+      "statement": "∑[v ∈ V] deg(v) is even",
       "type": "inference",
       "justification": "Any integer multiplied by 2 is even.",
       "depends_on": [
@@ -69,7 +69,7 @@
     },
     {
       "id": "S3",
-      "statement": "\\sum_{v \\in V_{even}} \\text{deg}(v) + \\sum_{v \\in V_{odd}} \\text{deg}(v) = \\text{even}",
+      "statement": "∑[v ∈ V_even] deg(v) + ∑[v ∈ V_odd] deg(v) = even",
       "type": "inference",
       "justification": "Partitioning the set of vertices into those with even degree and those with odd degree.",
       "depends_on": [
@@ -98,7 +98,7 @@
     },
     {
       "id": "S4",
-      "statement": "\\sum_{v \\in V_{even}} \\text{deg}(v) \\text{ is even}",
+      "statement": "∑[v ∈ V_even] deg(v) is even",
       "type": "inference",
       "justification": "A sum of even numbers is always even.",
       "depends_on": [
@@ -126,7 +126,7 @@
     },
     {
       "id": "S5",
-      "statement": "\\sum_{v \\in V_{odd}} \\text{deg}(v) \\text{ is even}",
+      "statement": "∑[v ∈ V_odd] deg(v) is even",
       "type": "inference",
       "justification": "If (Even + X) is even, then X must be even.",
       "depends_on": [
@@ -155,14 +155,14 @@
     },
     {
       "id": "S6",
-      "statement": "|V_{odd}| \\text{ is even}",
+      "statement": "|V_odd| is even",
       "type": "conclusion",
       "justification": "An odd number added to itself an odd number of times is odd; an odd number added to itself an even number of times is even. Thus, to get an even sum from odd numbers, you need an even number of them.",
       "depends_on": [
         "S5"
       ],
       "gap": true,
-      "gap_explanation": "Explain that if you sum $k$ odd numbers, the sum is even if and only if $k$ is even.",
+      "gap_explanation": "Explain that if you sum k odd numbers, the sum is even if and only if k is even.",
       "error": false,
       "error_explanation": "",
       "confidence": "high",
@@ -488,7 +488,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -515,7 +515,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -542,7 +542,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -569,7 +569,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -596,7 +596,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -623,7 +623,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -1067,8 +1067,18 @@
           "run_time": 1.5
         },
         "wait": 1.2
+      },
+      {
+        "step": "end",
+        "caption": "",
+        "plays": [],
+        "wait": 0.5,
+        "camera": {
+          "reset": true,
+          "run_time": 0.8
+        }
       }
     ],
-    "total_seconds": 14.5
+    "total_seconds": 15.0
   }
 }

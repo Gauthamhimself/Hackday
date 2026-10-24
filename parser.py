@@ -25,6 +25,7 @@ from google.genai import errors, types
 
 from manim_scene import build_manim_scene
 from prompts import SYSTEM_PROMPT, retry_prompt
+from readable import make_readable
 
 load_dotenv(Path(__file__).with_name(".env"))
 
@@ -385,7 +386,7 @@ def parse_proof(
     if best is None:
         raise ParseError("Couldn't read Gemma's answer as JSON", raw)
     best["warnings"] = best_problems
-    proof = normalize_visual(best)
+    proof = make_readable(normalize_visual(best))
     proof["manim"] = build_manim_scene(proof)
     return proof
 

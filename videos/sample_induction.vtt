@@ -1,0 +1,46 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:03.992
+Let's walk through this proof: Sum of first n integers.
+
+00:00:03.992 --> 00:00:07.405
+The claim: the sum of the first n integers.
+
+00:00:07.405 --> 00:00:10.060
+This is the claim to be proved.
+
+00:00:10.660 --> 00:00:13.680
+Base case: n = 1 works.
+
+00:00:14.280 --> 00:00:16.660
+Assume the formula holds for n.
+
+00:00:17.580 --> 00:00:21.224
+Add the (n+1)-th term to the sum.
+
+00:00:21.224 --> 00:00:27.470
+Adding the next term (n+1) to both sides of the inductive hypothesis.
+
+00:00:28.070 --> 00:00:33.275
+Simplify to the formula for n+1.
+
+00:00:33.275 --> 00:00:43.684
+Algebraic simplification: factor out (n+1) to get (n+1)[n/2 + 1] = (n+1)[(n+2)/2].
+
+00:00:43.684 --> 00:00:49.756
+Notice that a step is skipped here.
+
+00:00:49.756 --> 00:00:58.430
+Factor out (n+1): (n+1)(n/2 + 1) = (n+1)(n+2/2) = (n+1)(n+2)/2.
+
+00:00:59.030 --> 00:00:59.935
+Induction complete!
+
+00:00:59.935 --> 00:01:04.008
+So, in summary: The proof is logically sound, but
+
+00:01:04.008 --> 00:01:08.080
+S5 skips the algebraic factoring step required to show
+
+00:01:08.080 --> 00:01:11.700
+how the terms combine into the target formula.

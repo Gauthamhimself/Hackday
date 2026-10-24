@@ -1,0 +1,64 @@
+{
+  "voice": "en-US-AndrewMultilingualNeural",
+  "rate": "-5%",
+  "total_seconds": 55.57,
+  "segments": [
+    {
+      "step": "S1",
+      "start": 0.2,
+      "end": 9.15,
+      "text": "Let's walk through this proof: Irrationality of √2. Suppose √2 is rational.",
+      "audio_file": "sample_photo_00.mp3",
+      "audio_seconds": 8.95
+    },
+    {
+      "step": "S2",
+      "start": 9.75,
+      "end": 13.88,
+      "text": "Square both sides. Squaring both sides of the equation.",
+      "audio_file": "sample_photo_01.mp3",
+      "audio_seconds": 4.13
+    },
+    {
+      "step": "S3",
+      "start": 14.48,
+      "end": 19.74,
+      "text": "a must be even. Since a² is a multiple of 2, a must be even.",
+      "audio_file": "sample_photo_02.mp3",
+      "audio_seconds": 5.26
+    },
+    {
+      "step": "S4",
+      "start": 20.34,
+      "end": 28.74,
+      "text": "Substitute a = 2k. Substitute a = 2k into a² = 2b².",
+      "audio_file": "sample_photo_03.mp3",
+      "audio_seconds": 8.4
+    },
+    {
+      "step": "S5",
+      "start": 29.34,
+      "end": 31.24,
+      "text": "Simplify to find b.",
+      "audio_file": "sample_photo_04.mp3",
+      "audio_seconds": 1.9
+    },
+    {
+      "step": "S6",
+      "start": 31.84,
+      "end": 37.86,
+      "text": "b must also be even. Since b² is a multiple of 2, b must be even.",
+      "audio_file": "sample_photo_05.mp3",
+      "audio_seconds": 6.02
+    },
+    {
+      "step": "S7",
+      "start": 38.46,
+      "end": 53.17,
+      "text": "But they can't both be even! If both are even, they share a factor of 2, so the fraction was not in lowest terms. So, in summary: The proof is a standard and correct application of proof by contradiction.",
+      "audio_file": "sample_photo_06.mp3",
+      "audio_seconds": 14.71
+    }
+  ],
+  "video": "sample_photo.mp4"
+}

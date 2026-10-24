@@ -1,0 +1,79 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:05.073
+Let's walk through this proof: Number of odd-degree vertices is even.
+
+00:00:05.073 --> 00:00:10.388
+The sum of all degrees is always twice the number of edges.
+
+00:00:10.388 --> 00:00:13.489
+Handshaking Lemma: every edge has two endpoints,
+
+00:00:13.489 --> 00:00:16.590
+contributing 2 to the total degree sum.
+
+00:00:17.190 --> 00:00:20.455
+Therefore, the total sum must be even.
+
+00:00:20.455 --> 00:00:23.720
+Any integer multiplied by 2 is even.
+
+00:00:24.320 --> 00:00:27.701
+Split the sum into even-degree and odd-degree vertices.
+
+00:00:27.701 --> 00:00:31.082
+Partitioning the set of vertices into those with
+
+00:00:31.082 --> 00:00:34.040
+even degree and those with odd degree.
+
+00:00:34.640 --> 00:00:37.940
+The sum of even degrees is itself even.
+
+00:00:37.940 --> 00:00:41.240
+A sum of even numbers is always even.
+
+00:00:41.840 --> 00:00:45.964
+So the sum of odd degrees must also be even.
+
+00:00:45.964 --> 00:00:50.500
+If (Even + X) is even, then X must be even.
+
+00:00:51.100 --> 00:00:53.492
+To get an even sum, you must
+
+00:00:53.492 --> 00:00:55.885
+have an even number of odd terms.
+
+00:00:55.885 --> 00:00:58.960
+An odd number added to itself an odd number
+
+00:00:58.960 --> 00:01:02.036
+of times is odd; an odd number added to
+
+00:01:02.036 --> 00:01:04.770
+itself an even number of times is even.
+
+00:01:04.770 --> 00:01:07.504
+Thus, to get an even sum from odd
+
+00:01:07.504 --> 00:01:10.239
+numbers, you need an even number of them.
+
+00:01:10.239 --> 00:01:12.631
+Notice that a step is skipped here.
+
+00:01:12.631 --> 00:01:16.048
+Explain that if you sum k odd numbers, the sum
+
+00:01:16.048 --> 00:01:19.124
+is even if and only if k is even.
+
+00:01:19.124 --> 00:01:22.200
+So, in summary: The logic is sound, but S6
+
+00:01:22.200 --> 00:01:25.276
+skips the final parity argument connecting the sum of
+
+00:01:25.276 --> 00:01:28.010
+odd numbers to the count of those numbers.

@@ -60,6 +60,12 @@ try:
 except Exception as exc:  # noqa: BLE001
     draw_proof, VISUALS_ERROR = None, f"{type(exc).__name__}: {exc}"
 
+try:
+    from json_to_manim import render_proof
+    ANIMATION_ERROR = None
+except Exception as exc:  # noqa: BLE001
+    render_proof, ANIMATION_ERROR = None, f"{type(exc).__name__}: {exc}"
+
 # --------------------------------------------------------------------------
 # Page setup and styling
 # --------------------------------------------------------------------------
@@ -447,6 +453,31 @@ def render_tree(entry):
         st.warning("The proof tree couldn't be drawn, but the written analysis above is still available.")
 
 
+def render_animation(entry):
+    st.subheader("Animated explanation")
+    if render_proof is None:
+        st.info("The animation is unavailable because the manim module could not be loaded.")
+        return
+    videos = st.session_state.setdefault("videos", {})
+    video = videos.get(entry["id"])
+    if video is None:
+        st.caption("Renders a short 3Blue1Brown-style video of this proof with manim, narrated step by step.")
+        if st.button("🎬 Animate this proof", key=f"animate_{entry['id']}"):
+            try:
+                with st.spinner("Recording the narration and rendering the animation. This takes about 40 seconds..."):
+                    path = render_proof(entry["proof"], f"proof_{hashlib.md5(str(entry['id']).encode()).hexdigest()[:10]}")
+                vtt = path.with_suffix(".vtt")
+                videos[entry["id"]] = (path.read_bytes(), vtt.read_text(encoding="utf-8") if vtt.exists() else None)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("render_proof failed: %s", type(exc).__name__)
+                st.warning("The animation couldn't be rendered, but the analysis and proof tree above are still available.")
+            else:
+                st.rerun()  # redraw without the button, showing the video
+    if video is not None:
+        data, subtitles = video
+        st.video(data, subtitles=subtitles)
+
+
 def render_results(entry):
     proof = entry["proof"]
     steps = proof.get("steps") if isinstance(proof.get("steps"), list) else []
@@ -524,6 +555,7 @@ def render_results(entry):
 
     if steps:
         render_tree(entry)
+        render_animation(entry)
 
 
 # --------------------------------------------------------------------------

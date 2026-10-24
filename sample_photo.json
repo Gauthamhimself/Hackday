@@ -5,7 +5,7 @@
   "steps": [
     {
       "id": "S1",
-      "statement": "\\sqrt{2} = a/b \\text{ in lowest terms}",
+      "statement": "√(2) = a/b in lowest terms",
       "type": "assumption",
       "justification": "Assumption for contradiction.",
       "depends_on": [],
@@ -32,7 +32,7 @@
     },
     {
       "id": "S2",
-      "statement": "a^2 = 2b^2",
+      "statement": "a² = 2b²",
       "type": "inference",
       "justification": "Squaring both sides of the equation.",
       "depends_on": [
@@ -89,7 +89,7 @@
     },
     {
       "id": "S4",
-      "statement": "4k^2 = 2b^2",
+      "statement": "4k² = 2b²",
       "type": "inference",
       "justification": "Substitute a = 2k into a² = 2b².",
       "depends_on": [
@@ -118,7 +118,7 @@
     },
     {
       "id": "S5",
-      "statement": "b^2 = 2k^2",
+      "statement": "b² = 2k²",
       "type": "inference",
       "justification": "Divide both sides by 2.",
       "depends_on": [
@@ -385,7 +385,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -412,7 +412,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -439,7 +439,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -466,7 +466,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -493,7 +493,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -520,7 +520,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -547,7 +547,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"

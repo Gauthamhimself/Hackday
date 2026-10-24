@@ -1,0 +1,49 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:06.167
+Let's walk through this proof: Irrationality of √2.
+
+00:00:06.167 --> 00:00:09.150
+Suppose √2 is rational.
+
+00:00:09.750 --> 00:00:11.127
+Square both sides.
+
+00:00:11.127 --> 00:00:13.880
+Squaring both sides of the equation.
+
+00:00:14.480 --> 00:00:15.883
+a must be even.
+
+00:00:15.883 --> 00:00:19.740
+Since a² is a multiple of 2, a must be even.
+
+00:00:20.340 --> 00:00:23.140
+Substitute a = 2k.
+
+00:00:23.140 --> 00:00:28.740
+Substitute a = 2k into a² = 2b².
+
+00:00:29.340 --> 00:00:31.240
+Simplify to find b.
+
+00:00:31.840 --> 00:00:33.721
+b must also be even.
+
+00:00:33.721 --> 00:00:37.860
+Since b² is a multiple of 2, b must be even.
+
+00:00:38.460 --> 00:00:40.723
+But they can't both be even!
+
+00:00:40.723 --> 00:00:44.118
+If both are even, they share a factor of
+
+00:00:44.118 --> 00:00:47.512
+2, so the fraction was not in lowest terms.
+
+00:00:47.512 --> 00:00:50.530
+So, in summary: The proof is a standard
+
+00:00:50.530 --> 00:00:53.170
+and correct application of proof by contradiction.

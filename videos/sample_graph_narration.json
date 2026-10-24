@@ -1,0 +1,56 @@
+{
+  "voice": "en-US-AndrewMultilingualNeural",
+  "rate": "-5%",
+  "total_seconds": 91.71,
+  "segments": [
+    {
+      "step": "S1",
+      "start": 0.2,
+      "end": 16.59,
+      "text": "Let's walk through this proof: Number of odd-degree vertices is even. The sum of all degrees is always twice the number of edges. Handshaking Lemma: every edge has two endpoints, contributing 2 to the total degree sum.",
+      "audio_file": "sample_graph_00.mp3",
+      "audio_seconds": 16.39
+    },
+    {
+      "step": "S2",
+      "start": 17.19,
+      "end": 23.72,
+      "text": "Therefore, the total sum must be even. Any integer multiplied by 2 is even.",
+      "audio_file": "sample_graph_01.mp3",
+      "audio_seconds": 6.53
+    },
+    {
+      "step": "S3",
+      "start": 24.32,
+      "end": 34.04,
+      "text": "Split the sum into even-degree and odd-degree vertices. Partitioning the set of vertices into those with even degree and those with odd degree.",
+      "audio_file": "sample_graph_02.mp3",
+      "audio_seconds": 9.72
+    },
+    {
+      "step": "S4",
+      "start": 34.64,
+      "end": 41.24,
+      "text": "The sum of even degrees is itself even. A sum of even numbers is always even.",
+      "audio_file": "sample_graph_03.mp3",
+      "audio_seconds": 6.6
+    },
+    {
+      "step": "S5",
+      "start": 41.84,
+      "end": 50.5,
+      "text": "So the sum of odd degrees must also be even. If (Even + X) is even, then X must be even.",
+      "audio_file": "sample_graph_04.mp3",
+      "audio_seconds": 8.66
+    },
+    {
+      "step": "S6",
+      "start": 51.1,
+      "end": 88.01,
+      "text": "To get an even sum, you must have an even number of odd terms. An odd number added to itself an odd number of times is odd; an odd number added to itself an even number of times is even. Thus, to get an even sum from odd numbers, you need an even number of them. Notice that a step is skipped here. Explain that if you sum k odd numbers, the sum is even if and only if k is even. So, in summary: The logic is sound, but S6 skips the final parity argument connecting the sum of odd numbers to the count of those numbers.",
+      "audio_file": "sample_graph_05.mp3",
+      "audio_seconds": 36.91
+    }
+  ],
+  "video": "sample_graph.mp4"
+}

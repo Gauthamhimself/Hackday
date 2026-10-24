@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ProofLens: files the app renders on the fly, and local tool config
+videos/proof_*
+scenes/proof_*
+.claude/
+videos/audio/
+videos/*_silent.mp4

@@ -76,7 +76,7 @@
       "error_explanation": "",
       "confidence": "high",
       "display": {
-        "text": "S_n = n(n+1)/2",
+        "text": "Sₙ = n(n+1)/2",
         "tex": "S_n = \\frac{n(n+1)}{2}"
       },
       "animation": {
@@ -109,7 +109,7 @@
       "error_explanation": "",
       "confidence": "high",
       "display": {
-        "text": "S_{n+1} = S_n + (n+1)",
+        "text": "Sₙ₊₁ = Sₙ + (n+1)",
         "tex": "S_{n+1} = \\frac{n(n+1)}{2} + (n+1)"
       },
       "animation": {
@@ -132,7 +132,7 @@
         "S4"
       ],
       "gap": true,
-      "gap_explanation": "Factor out (n+1): (n+1)(\\frac{n}{2} + 1) = (n+1)(\\frac{n+2}{2}) = \\frac{(n+1)(n+2)}{2}.",
+      "gap_explanation": "Factor out (n+1): (n+1)(n/2 + 1) = (n+1)(n+2/2) = (n+1)(n+2)/2.",
       "error": false,
       "error_explanation": "",
       "confidence": "high",
@@ -440,7 +440,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -467,7 +467,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -476,7 +476,7 @@
         "id": "eq_S3",
         "class": "Text",
         "role": "equation",
-        "text": "S_n = n(n+1)/2",
+        "text": "Sₙ = n(n+1)/2",
         "tex": "S_n = \\frac{n(n+1)}{2}",
         "font_size": 40,
         "position": [
@@ -494,7 +494,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -503,7 +503,7 @@
         "id": "eq_S4",
         "class": "Text",
         "role": "equation",
-        "text": "S_{n+1} = S_n + (n+1)",
+        "text": "Sₙ₊₁ = Sₙ + (n+1)",
         "tex": "S_{n+1} = \\frac{n(n+1)}{2} + (n+1)",
         "font_size": 40,
         "position": [
@@ -521,7 +521,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -548,7 +548,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -575,7 +575,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -685,78 +685,6 @@
                 "target": "cap_S1",
                 "rate_func": "smooth",
                 "run_time": 0.4
-              }
-            ]
-          },
-          {
-            "lag_ratio": 0.35,
-            "run_time": 2.0,
-            "animations": [
-              {
-                "class": "Rotate",
-                "target": "d1",
-                "angle_degrees": -78,
-                "about_point": [
-                  -5.435,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
-              },
-              {
-                "class": "Rotate",
-                "target": "d2",
-                "angle_degrees": -78,
-                "about_point": [
-                  -4.485,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
-              },
-              {
-                "class": "Rotate",
-                "target": "d3",
-                "angle_degrees": -78,
-                "about_point": [
-                  -3.535,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
-              },
-              {
-                "class": "Rotate",
-                "target": "d4",
-                "angle_degrees": -78,
-                "about_point": [
-                  -2.585,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
-              },
-              {
-                "class": "Rotate",
-                "target": "d5",
-                "angle_degrees": -78,
-                "about_point": [
-                  -1.635,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
-              },
-              {
-                "class": "Rotate",
-                "target": "d6",
-                "angle_degrees": -78,
-                "about_point": [
-                  -0.685,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
               }
             ]
           }
@@ -999,74 +927,56 @@
             ]
           },
           {
-            "lag_ratio": 0.35,
-            "run_time": 3.0,
+            "lag_ratio": 0.1,
+            "run_time": 1.5,
             "animations": [
               {
-                "class": "Rotate",
+                "class": "Indicate",
                 "target": "d1",
-                "angle_degrees": -78,
-                "about_point": [
-                  -5.435,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
+                "color": "GREEN_C",
+                "scale_factor": 1.1,
+                "rate_func": "there_and_back",
+                "run_time": 1.5
               },
               {
-                "class": "Rotate",
+                "class": "Indicate",
                 "target": "d2",
-                "angle_degrees": -78,
-                "about_point": [
-                  -4.485,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
+                "color": "GREEN_C",
+                "scale_factor": 1.1,
+                "rate_func": "there_and_back",
+                "run_time": 1.5
               },
               {
-                "class": "Rotate",
+                "class": "Indicate",
                 "target": "d3",
-                "angle_degrees": -78,
-                "about_point": [
-                  -3.535,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
+                "color": "GREEN_C",
+                "scale_factor": 1.1,
+                "rate_func": "there_and_back",
+                "run_time": 1.5
               },
               {
-                "class": "Rotate",
+                "class": "Indicate",
                 "target": "d4",
-                "angle_degrees": -78,
-                "about_point": [
-                  -2.585,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
+                "color": "GREEN_C",
+                "scale_factor": 1.1,
+                "rate_func": "there_and_back",
+                "run_time": 1.5
               },
               {
-                "class": "Rotate",
+                "class": "Indicate",
                 "target": "d5",
-                "angle_degrees": -78,
-                "about_point": [
-                  -1.635,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
+                "color": "GREEN_C",
+                "scale_factor": 1.1,
+                "rate_func": "there_and_back",
+                "run_time": 1.5
               },
               {
-                "class": "Rotate",
+                "class": "Indicate",
                 "target": "d6",
-                "angle_degrees": -78,
-                "about_point": [
-                  -0.685,
-                  -0.45,
-                  0.0
-                ],
-                "rate_func": "rush_into"
+                "color": "GREEN_C",
+                "scale_factor": 1.1,
+                "rate_func": "there_and_back",
+                "run_time": 1.5
               }
             ]
           }
@@ -1139,8 +1049,18 @@
           "run_time": 0.4
         },
         "wait": 1.2
+      },
+      {
+        "step": "end",
+        "caption": "",
+        "plays": [],
+        "wait": 0.5,
+        "camera": {
+          "reset": true,
+          "run_time": 0.8
+        }
       }
     ],
-    "total_seconds": 18.8
+    "total_seconds": 15.8
   }
 }

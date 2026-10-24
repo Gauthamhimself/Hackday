@@ -1,0 +1,56 @@
+{
+  "voice": "en-US-AndrewMultilingualNeural",
+  "rate": "-5%",
+  "total_seconds": 75.4,
+  "segments": [
+    {
+      "step": "S1",
+      "start": 0.2,
+      "end": 10.06,
+      "text": "Let's walk through this proof: Sum of first n integers. The claim: the sum of the first n integers. This is the claim to be proved.",
+      "audio_file": "sample_induction_00.mp3",
+      "audio_seconds": 9.86
+    },
+    {
+      "step": "S2",
+      "start": 10.66,
+      "end": 13.68,
+      "text": "Base case: n = 1 works.",
+      "audio_file": "sample_induction_01.mp3",
+      "audio_seconds": 3.02
+    },
+    {
+      "step": "S3",
+      "start": 14.28,
+      "end": 16.66,
+      "text": "Assume the formula holds for n.",
+      "audio_file": "sample_induction_02.mp3",
+      "audio_seconds": 2.38
+    },
+    {
+      "step": "S4",
+      "start": 17.58,
+      "end": 27.47,
+      "text": "Add the (n+1)-th term to the sum. Adding the next term (n+1) to both sides of the inductive hypothesis.",
+      "audio_file": "sample_induction_03.mp3",
+      "audio_seconds": 9.89
+    },
+    {
+      "step": "S5",
+      "start": 28.07,
+      "end": 58.43,
+      "text": "Simplify to the formula for n+1. Algebraic simplification: factor out (n+1) to get (n+1)[n/2 + 1] = (n+1)[(n+2)/2]. Notice that a step is skipped here. Factor out (n+1): (n+1)(n/2 + 1) = (n+1)(n+2/2) = (n+1)(n+2)/2.",
+      "audio_file": "sample_induction_04.mp3",
+      "audio_seconds": 30.36
+    },
+    {
+      "step": "S6",
+      "start": 59.03,
+      "end": 71.7,
+      "text": "Induction complete! So, in summary: The proof is logically sound, but S5 skips the algebraic factoring step required to show how the terms combine into the target formula.",
+      "audio_file": "sample_induction_05.mp3",
+      "audio_seconds": 12.67
+    }
+  ],
+  "video": "sample_induction.mp4"
+}

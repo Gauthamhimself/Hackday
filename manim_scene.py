@@ -33,10 +33,12 @@ Text mobjects carry both "text" (Unicode, works without LaTeX) and "tex" (needs 
 import math
 import textwrap
 
+from readable import unicode_scripts as _unicode_scripts
+
 FRAME_WIDTH, FRAME_HEIGHT = 14.222, 8.0
 FIGURE_CENTER = (-3.2, 0.3)      # left part of the screen: the picture
 EQUATION_POS = (3.7, 1.2)        # right part: the equation being rewritten
-CAPTION_POS = (0.0, -3.45)       # bottom: subtitle
+CAPTION_POS = (0.0, -2.9)        # bottom, above where the player shows subtitles
 FIGURE_W, FIGURE_H = 6.4, 5.4
 
 PALETTE = ["BLUE_C", "GREEN_C", "PURPLE_C", "TEAL_C", "GOLD_C"]
@@ -336,7 +338,7 @@ def build_manim_scene(proof: dict) -> dict:
         fallback = (textwrap.shorten(statement, 32, placeholder=" …")
                     if "\\" not in statement and "$" not in statement else s.get("type", "step").title())
         text_mobs.append({"id": f"eq_{s['id']}", "class": "Text", "role": "equation",
-                          "text": disp.get("text") or fallback,
+                          "text": _unicode_scripts(disp.get("text") or fallback),
                           "tex": disp.get("tex", ""), "font_size": 40, "position": _p(*EQUATION_POS),
                           "color": COLOR_ERROR if s.get("error") else "WHITE"})
         text_mobs.append({"id": f"cap_{s['id']}", "class": "Text", "role": "caption",
@@ -346,6 +348,7 @@ def build_manim_scene(proof: dict) -> dict:
              "position": _p(0, FRAME_HEIGHT / 2 - 0.55), "color": "WHITE"}
 
     shown: set[str] = set()
+    fallen: set[str] = set()
     timeline = []
     for i, s in enumerate(steps):
         anim = s.get("animation", {})
@@ -383,14 +386,22 @@ def build_manim_scene(proof: dict) -> dict:
         plays.append({"lag_ratio": 0, "run_time": rt, "animations": eq_anims + caption_anims})
 
         # 3. The step's own move on the figure.
-        if template == "dominoes" and len(targets) >= 2 and action != "break":
+        if template == "dominoes" and len(targets) >= 2 and action != "break" and i > 0:
             # Inductive step: dominoes fall one after another (stopping before a broken one).
+            # Each domino falls only once; later steps just highlight the fallen chain.
             breaks_at = visual.get("params", {}).get("breaks_at")
             base = visual.get("params", {}).get("base", 1)
-            falling = [t for t in targets if breaks_at is None or int(t[1:]) - 1 + base < breaks_at]
-            plays.append({"lag_ratio": 0.35, "run_time": max(rt * 2, 2.0), "animations": [
-                {"class": "Rotate", "target": t, "angle_degrees": -78, "about_point": by_id[t]["pivot"],
-                 "rate_func": "rush_into"} for t in falling]})
+            falling = [t for t in targets if t not in fallen
+                       and (breaks_at is None or int(t[1:]) - 1 + base < breaks_at)]
+            fallen.update(falling)
+            if falling:
+                plays.append({"lag_ratio": 0.35, "run_time": max(rt * 2, 2.0), "animations": [
+                    {"class": "Rotate", "target": t, "angle_degrees": -78, "about_point": by_id[t]["pivot"],
+                     "rate_func": "rush_into"} for t in falling]})
+            else:
+                plays.append({"lag_ratio": 0.1, "run_time": rt, "animations": [
+                    {"class": "Indicate", "target": t, "color": COLOR_GOOD, "scale_factor": 1.1,
+                     "rate_func": "there_and_back", "run_time": rt} for t in targets]})
         else:
             fig_anims = [a for t in targets for a in _emphasize(action, emphasis, t, by_id[t], rt)]
             if s.get("error"):
@@ -417,6 +428,10 @@ def build_manim_scene(proof: dict) -> dict:
     leftover = [_show(m, 0.6) for m in figure if m["id"] not in shown]
     if leftover and timeline:
         timeline[-1]["plays"].append({"lag_ratio": 0.1, "run_time": 1.0, "animations": leftover})
+    # Never end zoomed in: the final frame should show the whole picture.
+    if timeline and timeline[-1]["camera"] and not timeline[-1]["camera"].get("reset"):
+        timeline.append({"step": "end", "caption": "", "plays": [], "wait": 0.5,
+                         "camera": {"reset": True, "run_time": 0.8}})
 
     return {
         "engine": "manimgl",

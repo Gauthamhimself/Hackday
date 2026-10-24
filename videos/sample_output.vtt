@@ -1,0 +1,43 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:04.356
+Let's walk through this proof: All horses are the same color.
+
+00:00:04.356 --> 00:00:08.890
+Base case: A single horse is always the same color as itself.
+
+00:00:09.490 --> 00:00:12.490
+Assume the property holds for n horses.
+
+00:00:13.090 --> 00:00:16.210
+In a set of n+1, the last
+
+00:00:16.210 --> 00:00:18.883
+n horses are the same color.
+
+00:00:18.883 --> 00:00:23.340
+Application of inductive hypothesis to a subset of size n.
+
+00:00:23.940 --> 00:00:27.644
+The first n horses are also the same color.
+
+00:00:27.644 --> 00:00:32.170
+Application of inductive hypothesis to a different subset of size n.
+
+00:00:32.770 --> 00:00:33.302
+Wait!
+
+00:00:33.302 --> 00:00:38.624
+If n=1, there is no overlap between {h1} and {h2}!
+
+00:00:38.624 --> 00:00:43.414
+The overlap argument fails when n=1 (moving to n+1=2).
+
+00:00:43.414 --> 00:00:49.801
+For n=1, the first group is {h2} and the second is {h1}.
+
+00:00:49.801 --> 00:00:53.527
+There is no common horse to link
+
+00:00:53.527 --> 00:00:56.720
+the colors of h1 and h2.

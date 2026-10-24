@@ -5,7 +5,7 @@
   "steps": [
     {
       "id": "S1",
-      "statement": "f(x) = x^3 + x - 1",
+      "statement": "f(x) = x³ + x - 1",
       "type": "definition",
       "justification": "Defining the function to be analyzed.",
       "depends_on": [],
@@ -115,7 +115,7 @@
     },
     {
       "id": "S5",
-      "statement": "\\exists c \\in (0,1) : f(c) = 0",
+      "statement": "∃c ∈ (0,1) : f(c) = 0",
       "type": "conclusion",
       "justification": "The Intermediate Value Theorem guarantees a root when a continuous function changes sign.",
       "depends_on": [
@@ -348,7 +348,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -375,7 +375,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -402,7 +402,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -429,7 +429,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"
@@ -456,7 +456,7 @@
         "font_size": 28,
         "position": [
           0.0,
-          -3.45,
+          -2.9,
           0.0
         ],
         "color": "GREY_A"

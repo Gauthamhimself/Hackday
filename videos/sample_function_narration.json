@@ -1,0 +1,48 @@
+{
+  "voice": "en-US-AndrewMultilingualNeural",
+  "rate": "-5%",
+  "total_seconds": 62.52,
+  "segments": [
+    {
+      "step": "S1",
+      "start": 0.2,
+      "end": 11.36,
+      "text": "Let's walk through this proof: Existence of root for x³ + x - 1. Define the function f(x). Defining the function to be analyzed.",
+      "audio_file": "sample_function_00.mp3",
+      "audio_seconds": 11.16
+    },
+    {
+      "step": "S2",
+      "start": 11.96,
+      "end": 19.3,
+      "text": "The function is a smooth, continuous curve. Polynomials are continuous everywhere on the real line.",
+      "audio_file": "sample_function_01.mp3",
+      "audio_seconds": 7.34
+    },
+    {
+      "step": "S3",
+      "start": 19.9,
+      "end": 29.31,
+      "text": "At x = 0, the function is negative. Direct substitution: 0³ + 0 - 1 = -1.",
+      "audio_file": "sample_function_02.mp3",
+      "audio_seconds": 9.41
+    },
+    {
+      "step": "S4",
+      "start": 29.91,
+      "end": 38.26,
+      "text": "At x = 1, the function is positive. Direct substitution: 1³ + 1 - 1 = 1.",
+      "audio_file": "sample_function_03.mp3",
+      "audio_seconds": 8.35
+    },
+    {
+      "step": "S5",
+      "start": 38.86,
+      "end": 60.12,
+      "text": "By IVT, the curve must cross zero. The Intermediate Value Theorem guarantees a root when a continuous function changes sign. So, in summary: The proof correctly identifies the function, establishes continuity, checks the endpoints for a sign change, and applies the Intermediate Value Theorem.",
+      "audio_file": "sample_function_04.mp3",
+      "audio_seconds": 21.26
+    }
+  ],
+  "video": "sample_function.mp4"
+}

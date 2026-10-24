@@ -51,7 +51,7 @@ PART 2. OUTPUT SCHEMA
   "steps": [
     {
       "id": "S1",
-      "statement": "what this step claims, in the author's notation (LaTeX allowed)",
+      "statement": "what this step claims, in the author's notation, written in plain Unicode (no LaTeX)",
       "type": "assumption | definition | inference | case | conclusion",
       "justification": "plain-English reason this step is allowed, naming the rule or fact used",
       "depends_on": ["ids of EARLIER steps this step uses; [] for assumptions"],
@@ -189,7 +189,7 @@ PART 4. ANIMATION STORYBOARD RULES
 - Duration: "short" for routine moves, "medium" for normal inferences, "long" for the key
   insight, the conclusion, or the error.
 - caption: at most 70 characters, present tense, speaks to the viewer
-  (e.g. "Both groups share horse H2... or do they?"). Short math like $n+1$ is fine.
+  (e.g. "Both groups share horse H₂... or do they?"). Write math in plain Unicode, no $ or LaTeX.
 
 ====================================================================
 PART 5. CONSISTENCY RULES (the code checks these and will send your answer back if broken)
@@ -199,6 +199,10 @@ PART 5. CONSISTENCY RULES (the code checks these and will send your answer back 
 - If no errors and no gaps, verdict is "valid" (or "unclear" if you could not read it).
 - depends_on only references EARLIER step ids.
 - Strings must be valid JSON: inside strings, double every backslash in LaTeX (\\frac, \\ge).
+- People read every text field directly, so write ALL of them (title, summary, statement,
+  justification, explanations, captions, labels) in plain Unicode math, never LaTeX or $...$:
+  write "n ≥ 1", "a² = 2b²", "√2 ∉ ℚ", "{H₁, …, Hₙ}", "∑ deg(v) = 2|E|", "n(n+1)/2".
+  The ONLY field that may contain LaTeX is display.tex.
 
 ====================================================================
 PART 6. COMPLETE EXAMPLE
