@@ -1,0 +1,184 @@
+{
+  "title": "Sum of first n integers",
+  "technique": "induction",
+  "summary": "We prove the formula for the sum of the first n integers by showing it works for n=1 and then showing that if it works for n, it must work for n+1.",
+  "steps": [
+    {
+      "id": "S1",
+      "statement": "P(n): 1 + 2 + ... + n = \\frac{n(n+1)}{2} for all n \\ge 1",
+      "type": "assumption",
+      "justification": "This is the claim to be proved.",
+      "depends_on": [],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "d1",
+          "d2",
+          "d3",
+          "d4",
+          "d5",
+          "d6"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "The claim: the sum of the first n integers",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S2",
+      "statement": "n = 1: 1 = \\frac{1(1+1)}{2} = 1",
+      "type": "case",
+      "justification": "Base case verification for n=1.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "d1"
+        ],
+        "emphasis": "glow",
+        "duration": "short",
+        "caption": "Base case: n=1 works",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S3",
+      "statement": "Assume 1 + 2 + ... + n = \\frac{n(n+1)}{2}",
+      "type": "assumption",
+      "justification": "Inductive hypothesis.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "d2"
+        ],
+        "emphasis": "pulse",
+        "duration": "medium",
+        "caption": "Assume it holds for n",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S4",
+      "statement": "1 + ... + n + (n+1) = \\frac{n(n+1)}{2} + (n+1)",
+      "type": "inference",
+      "justification": "Substitution of the inductive hypothesis into the sum for n+1.",
+      "depends_on": [
+        "S3"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "transform",
+        "targets": [
+          "d3"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "Add the next term (n+1) to both sides",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S5",
+      "statement": "\\frac{n(n+1)}{2} + (n+1) = \\frac{(n+1)(n+2)}{2}",
+      "type": "inference",
+      "justification": "Algebraic simplification by factoring out (n+1).",
+      "depends_on": [
+        "S4"
+      ],
+      "gap": true,
+      "gap_explanation": "Show the algebra: (n+1)[n/2 + 1] = (n+1)[(n+2)/2] = (n+1)(n+2)/2.",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "transform",
+        "targets": [
+          "d1",
+          "d2",
+          "d3",
+          "d4",
+          "d5",
+          "d6"
+        ],
+        "emphasis": "glow",
+        "duration": "long",
+        "caption": "Factor out (n+1) to reach the target formula",
+        "duration_ms": 1500
+      }
+    },
+    {
+      "id": "S6",
+      "statement": "1 + ... + (n+1) = \\frac{(n+1)((n+1)+1)}{2}",
+      "type": "conclusion",
+      "justification": "The formula holds for n+1.",
+      "depends_on": [
+        "S5"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "connect",
+        "targets": [
+          "d1",
+          "d2",
+          "d3",
+          "d4",
+          "d5",
+          "d6"
+        ],
+        "emphasis": "glow",
+        "duration": "medium",
+        "caption": "The chain is complete: it holds for all n >= 1",
+        "duration_ms": 800
+      }
+    }
+  ],
+  "verdict": "valid_with_gaps",
+  "verdict_explanation": "The logic is sound, but the algebraic step in S5 skips the intermediate factoring of (n+1) which is crucial for clarity.",
+  "visual": {
+    "template": "dominoes",
+    "params": {
+      "base": 1,
+      "count": 6,
+      "breaks_at": null,
+      "domino_ids": [
+        "d1",
+        "d2",
+        "d3",
+        "d4",
+        "d5",
+        "d6"
+      ]
+    }
+  },
+  "attempts": 1,
+  "warnings": []
+}
