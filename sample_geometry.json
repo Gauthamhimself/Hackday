@@ -1,0 +1,236 @@
+{
+  "title": "Sum of angles in a triangle is 180°",
+  "technique": "construction",
+  "summary": "By drawing a line through one vertex parallel to the opposite side, we use alternate interior angles to show that the three angles of the triangle form a straight line.",
+  "steps": [
+    {
+      "id": "S1",
+      "statement": "Let $ABC$ be a triangle.",
+      "type": "assumption",
+      "justification": "Given/Setup",
+      "depends_on": [],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "error_explanation": "",
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "A",
+          "B",
+          "C",
+          "AB",
+          "BC",
+          "CA"
+        ],
+        "emphasis": "none",
+        "duration": "short",
+        "caption": "Start with triangle ABC",
+        "duration_ms": 400
+      }
+    },
+    {
+      "id": "S2",
+      "statement": "Draw line $PQ$ through $A$ parallel to $BC$.",
+      "type": "inference",
+      "justification": "Parallel Postulate allows construction of a unique parallel line through a point not on the line.",
+      "depends_on": [
+        "S1"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "confidence": "high",
+      "animation": {
+        "action": "appear",
+        "targets": [
+          "P",
+          "Q",
+          "PQ"
+        ],
+        "emphasis": "none",
+        "duration": "medium",
+        "caption": "Draw a line through A parallel to BC",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S3",
+      "statement": "\\angle PAB = \\angle B and \\angle QAC = \\angle C",
+      "type": "inference",
+      "justification": "Alternate interior angles are equal when lines are parallel.",
+      "depends_on": [
+        "S1",
+        "S2"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "confidence": "high",
+      "animation": {
+        "action": "connect",
+        "targets": [
+          "angPAB",
+          "angB",
+          "angQAC",
+          "angC"
+        ],
+        "emphasis": "glow",
+        "duration": "medium",
+        "caption": "Alternate interior angles are equal",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S4",
+      "statement": "\\angle PAB + \\angle BAC + \\angle QAC = 180^\\circ",
+      "type": "inference",
+      "justification": "Angles on a straight line sum to 180 degrees.",
+      "depends_on": [
+        "S2",
+        "S3"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "confidence": "high",
+      "animation": {
+        "action": "highlight",
+        "targets": [
+          "PQ"
+        ],
+        "emphasis": "pulse",
+        "duration": "medium",
+        "caption": "These angles form the straight line PQ",
+        "duration_ms": 800
+      }
+    },
+    {
+      "id": "S5",
+      "statement": "\\angle A + \\angle B + \\angle C = 180^\\circ",
+      "type": "conclusion",
+      "justification": "Substitution of S3 into S4.",
+      "depends_on": [
+        "S3",
+        "S4"
+      ],
+      "gap": false,
+      "gap_explanation": "",
+      "error": false,
+      "confidence": "high",
+      "animation": {
+        "action": "transform",
+        "targets": [
+          "angA",
+          "angB",
+          "angC"
+        ],
+        "emphasis": "glow",
+        "duration": "long",
+        "caption": "Therefore, the sum of the triangle's angles is 180°",
+        "duration_ms": 1500
+      }
+    }
+  ],
+  "verdict": "valid",
+  "verdict_explanation": "The proof is a classic and correct application of the parallel postulate and properties of alternate interior angles.",
+  "visual": {
+    "template": "geometry",
+    "params": {
+      "points": [
+        {
+          "id": "A",
+          "x": 5.0,
+          "y": 7.0
+        },
+        {
+          "id": "B",
+          "x": 2.0,
+          "y": 2.0
+        },
+        {
+          "id": "C",
+          "x": 8.0,
+          "y": 2.0
+        },
+        {
+          "id": "P",
+          "x": 1.0,
+          "y": 7.0
+        },
+        {
+          "id": "Q",
+          "x": 9.0,
+          "y": 7.0
+        }
+      ],
+      "segments": [
+        {
+          "id": "AB",
+          "from": "A",
+          "to": "B",
+          "length": 5.831
+        },
+        {
+          "id": "BC",
+          "from": "B",
+          "to": "C",
+          "length": 6.0
+        },
+        {
+          "id": "CA",
+          "from": "C",
+          "to": "A",
+          "length": 5.831
+        },
+        {
+          "id": "PQ",
+          "from": "P",
+          "to": "Q",
+          "length": 8.0
+        }
+      ],
+      "angles": [
+        {
+          "id": "angA",
+          "vertex": "A",
+          "from": "B",
+          "to": "C",
+          "degrees": 61.9
+        },
+        {
+          "id": "angB",
+          "vertex": "B",
+          "from": "C",
+          "to": "A",
+          "degrees": 59.0
+        },
+        {
+          "id": "angC",
+          "vertex": "C",
+          "from": "A",
+          "to": "B",
+          "degrees": 59.0
+        },
+        {
+          "id": "angPAB",
+          "vertex": "A",
+          "from": "P",
+          "to": "B",
+          "degrees": 59.0
+        },
+        {
+          "id": "angQAC",
+          "vertex": "A",
+          "from": "C",
+          "to": "Q",
+          "degrees": 59.0
+        }
+      ],
+      "circles": []
+    }
+  },
+  "attempts": 2,
+  "warnings": []
+}
